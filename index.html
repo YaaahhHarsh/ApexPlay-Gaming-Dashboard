@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexPlay | Ultimate Gaming Profile & Dashboard</title>
+  <meta name="description" content="Experience the next-generation gaming dashboard with live library tracking, FreeToGame public API integration, achievement progress, playtime analytics, and gaming news.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2226%22 font-size=%2228%22>🎮</text></svg>">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+  <!-- Ambient Animated Particle Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="app-wrapper">
+    <!-- Active In-Game Session Alert Bar -->
+    <div id="active-session-bar" class="active-session-banner">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span class="status-dot-pulse" style="background: #fff; box-shadow: 0 0 10px #fff;"></span>
+        <span id="active-session-title">In-Game: Cyberpunk 2077</span>
+        <span class="session-badge" id="active-session-timer">00:00</span>
+      </div>
+      <button class="btn-secondary btn-sm" id="btn-end-session" style="background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.3); color: #fff;">
+        End Session & Log Hours
+      </button>
+    </div>
+
+    <!-- Top Sticky Navigation Bar -->
+    <header class="top-navbar">
+      <div class="brand-section" data-tab="dashboard">
+        <div class="brand-logo">⚡</div>
+        <div class="brand-text">APEXPLAY</div>
+        <span class="brand-badge">PRO</span>
+      </div>
+
+      <!-- Global Search Bar -->
+      <div class="nav-search-wrap">
+        <span class="nav-search-icon">🔍</span>
+        <input type="text" id="nav-search-input" class="nav-search-input" placeholder="Search games, genres, developers, public API..." autocomplete="off">
+        <div id="nav-search-dropdown" class="nav-search-dropdown"></div>
+      </div>
+
+      <!-- Nav Actions & API status -->
+      <div class="nav-actions">
+        <div id="api-status-chip" class="api-status-chip" title="Live FreeToGame Public Games API integration status">
+          <span class="status-dot-pulse"></span> FreeToGame API Online
+        </div>
+
+        <button id="btn-toggle-sound" class="icon-btn active" title="Toggle UI Sound Effects" aria-label="Toggle Sound">
+          🔊
+        </button>
+
+        <button id="btn-reset-data" class="icon-btn" title="Reset Dashboard Data" aria-label="Reset Data">
+          🔄
+        </button>
+
+        <button id="btn-open-edit-profile" class="btn-primary btn-sm">
+          ✏️ Edit Profile
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout Container -->
+    <div class="dashboard-layout">
+      <!-- Left Navigation Sidebar -->
+      <aside class="nav-sidebar">
+        <!-- Mini Profile Card in Sidebar -->
+        <div class="sidebar-mini-profile">
+          <div class="mini-profile-top">
+            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="mini-avatar">
+            <div class="mini-meta">
+              <div class="mini-tag profile-gamertag">V0RT3X_KNIGHT</div>
+              <div class="mini-rank" id="profile-rank-text">Grandmaster Tier II</div>
+            </div>
+          </div>
+          <div class="xp-progress-track">
+            <div class="xp-progress-bar" style="width: 78%;"></div>
+          </div>
+        </div>
+
+        <!-- Navigation Menu Groups -->
+        <div class="nav-menu-group">
+          <div class="nav-menu-label">Main Menu</div>
+          <button class="nav-tab-btn active" data-tab="dashboard">
+            <span class="tab-icon">🏠</span>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="library">
+            <span class="tab-icon">🕹️</span>
+            <span>Game Library</span>
+            <span class="tab-badge" id="badge-library-count">6</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="discover">
+            <span class="tab-icon">🌐</span>
+            <span>Discover API</span>
+            <span class="tab-badge" style="background: rgba(6,182,212,0.2); color: var(--neon-cyan);">400+</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="achievements">
+            <span class="tab-icon">🏆</span>
+            <span>Achievements</span>
+            <span class="tab-badge" id="badge-ach-count">6</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="analytics">
+            <span class="tab-icon">📊</span>
+            <span>Playtime Stats</span>
+          </button>
+        </div>
+
+        <div class="nav-menu-group">
+          <div class="nav-menu-label">Social & Hub</div>
+          <button class="nav-tab-btn" data-tab="wishlist">
+            <span class="tab-icon">💖</span>
+            <span>Wishlist</span>
+            <span class="tab-badge" id="badge-wishlist-count">3</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="news">
+            <span class="tab-icon">📰</span>
+            <span>Gaming News</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Central Content Hub -->
+      <main class="main-content">
+        <!-- ==========================================
+             TAB 1: MAIN DASHBOARD & PROFILE
+             ========================================== -->
+        <section id="tab-dashboard" class="tab-panel active">
+          <!-- Hero Profile Card -->
+          <div class="profile-hero-card">
+            <div class="profile-banner-wrap">
+              <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80" alt="Cover Banner" class="profile-banner-img">
+              <div class="profile-banner-overlay"></div>
+            </div>
+
+            <div class="profile-body">
+              <div class="profile-main-row">
+                <div class="profile-identity">
+                  <div class="avatar-container">
+                    <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Profile Avatar" class="profile-avatar-img">
+                    <div class="avatar-status-indicator" title="Status: Online"></div>
+                  </div>
+                  <div class="identity-details">
+                    <div class="profile-gamertag-row">
+                      <h1 class="profile-gamertag">V0RT3X_KNIGHT</h1>
+                      <span class="profile-rank-badge">Apex Predator</span>
+                    </div>
+                    <p class="profile-title-bio" id="profile-bio-text">
+                      Cyber Vanguard • Competitive FPS & immersive RPG enthusiast. Building the ultimate sci-fi backcatalog.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="profile-actions">
+                  <button class="btn-primary" data-tab="discover">
+                    + Explore Games
+                  </button>
+                  <button class="btn-secondary" data-tab="library">
+                    View Library
+                  </button>
+                </div>
+              </div>
+
+              <!-- Level Progress Bar -->
+              <div class="profile-level-card">
+                <div class="level-meta-row">
+                  <div class="level-badge-wrap">
+                    <div class="level-number-pill">47</div>
+                    <div class="level-title">Elite Veteran Level</div>
+                  </div>
+                  <div class="xp-counter" id="profile-xp-counter">
+                    <span>6,850</span> / 8,500 XP (80%)
+                  </div>
+                </div>
+                <div class="xp-progress-track">
+                  <div id="profile-xp-bar" class="xp-progress-bar" style="width: 80%;"></div>
+                </div>
+              </div>
+
+              <!-- Profile Prestige Badges -->
+              <div class="profile-badges-row">
+                <div class="badge-item" title="Maintained 60%+ headshot accuracy in 50 matches">
+                  <span class="badge-icon">🎯</span> Aim God
+                </div>
+                <div class="badge-item" title="100% completed 12 AAA titles">
+                  <span class="badge-icon">🏆</span> Platinum Collector
+                </div>
+                <div class="badge-item" title="Over 500 hours logged between midnight and 5 AM">
+                  <span class="badge-icon">🌙</span> Night Owl
+                </div>
+                <div class="badge-item" title="Top 5% completion speed in Elden Ring">
+                  <span class="badge-icon">⚡</span> Speedrunner
+                </div>
+              </div>
+
+              <!-- Profile Quick Statistics Grid -->
+              <div class="profile-stats-grid">
+                <div class="stat-widget-card">
+                  <div class="stat-icon-wrap purple">⏳</div>
+                  <div class="stat-widget-info">
+                    <div class="stat-value" id="stat-total-hours">1,721h</div>
+                    <div class="stat-label">Total Playtime</div>
+                  </div>
+                </div>
+                <div class="stat-widget-card">
+                  <div class="stat-icon-wrap cyan">🎮</div>
+                  <div class="stat-widget-info">
+                    <div class="stat-value" id="stat-games-owned">6</div>
+                    <div class="stat-label">Games Owned</div>
+                  </div>
+                </div>
+                <div class="stat-widget-card">
+                  <div class="stat-icon-wrap emerald">🏆</div>
+                  <div class="stat-widget-info">
+                    <div class="stat-value" id="stat-ach-unlocked">6</div>
+                    <div class="stat-label">Achievements</div>
+                  </div>
+                </div>
+                <div class="stat-widget-card">
+                  <div class="stat-icon-wrap amber">📈</div>
+                  <div class="stat-widget-info">
+                    <div class="stat-value" id="stat-completion-rate">82%</div>
+                    <div class="stat-label">Completion Rate</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recently Played Spotlight -->
+          <div style="margin-top: 2rem;">
+            <div class="section-header-wrap">
+              <div class="section-title-group">
+                <h2 class="section-title">Recently Played Games</h2>
+                <span class="section-count-badge">Active Sessions</span>
+              </div>
+              <button class="btn-secondary btn-sm" data-tab="library">See All in Library →</button>
+            </div>
+            <div id="recently-played-container" class="recently-played-grid"></div>
+          </div>
+
+          <!-- Quick Preview Analytics in Dashboard -->
+          <div style="margin-top: 2rem;">
+            <div class="section-header-wrap">
+              <div class="section-title-group">
+                <h2 class="section-title">Weekly Gaming Activity</h2>
+                <span class="section-count-badge">Last 7 Days</span>
+              </div>
+              <button class="btn-secondary btn-sm" data-tab="analytics">Full Analytics Breakdown →</button>
+            </div>
+            <div class="chart-card">
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-weekly-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 2: GAME LIBRARY
+             ========================================== -->
+        <section id="tab-library" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Personal Game Library</h2>
+              <span class="section-count-badge" id="library-total-count">6 Games</span>
+            </div>
+            <div class="section-controls">
+              <div style="display: flex; gap: 4px;">
+                <button id="btn-view-grid" class="icon-btn active" title="Grid View">⊞</button>
+                <button id="btn-view-list" class="icon-btn" title="List View">☰</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Library Filter and Sort Toolbar -->
+          <div class="library-filter-toolbar">
+            <div class="filter-tags-wrap">
+              <button class="filter-tag-chip active" data-lib-filter="all">All Games</button>
+              <button class="filter-tag-chip" data-lib-filter="Playing">Playing</button>
+              <button class="filter-tag-chip" data-lib-filter="Completed">Completed</button>
+              <button class="filter-tag-chip" data-lib-filter="Installed">Installed</button>
+              <button class="filter-tag-chip" data-lib-filter="Favorites">★ Favorites</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.8rem; color: var(--text-dim);">Sort By:</span>
+              <select id="library-sort-select" class="library-sort-select">
+                <option value="playtime">Most Played</option>
+                <option value="name">Alphabetical</option>
+                <option value="rating">Top Rated</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Library Games Grid / List Container -->
+          <div id="library-catalog-container" class="games-catalog-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 3: DISCOVER PUBLIC GAMES API
+             ========================================== -->
+        <section id="tab-discover" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Discover Games (Live Public API)</h2>
+              <span class="section-count-badge">FreeToGame Database</span>
+            </div>
+            <span style="font-size: 0.85rem; color: var(--neon-cyan);">⚡ Direct Public API Connection (No Key Required)</span>
+          </div>
+
+          <!-- Genre Filter Pills for Public API -->
+          <div class="library-filter-toolbar">
+            <div class="filter-tags-wrap">
+              <button class="filter-tag-chip active" data-discover-genre="all">All Categories</button>
+              <button class="filter-tag-chip" data-discover-genre="shooter">Shooter</button>
+              <button class="filter-tag-chip" data-discover-genre="mmo">MMORPG</button>
+              <button class="filter-tag-chip" data-discover-genre="battle-royale">Battle Royale</button>
+              <button class="filter-tag-chip" data-discover-genre="action-rpg">Action RPG</button>
+              <button class="filter-tag-chip" data-discover-genre="strategy">Strategy</button>
+              <button class="filter-tag-chip" data-discover-genre="racing">Racing</button>
+            </div>
+          </div>
+
+          <!-- Public API Games Grid Container -->
+          <div id="discover-games-container" class="games-catalog-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 4: ACHIEVEMENT TRACKER
+             ========================================== -->
+        <section id="tab-achievements" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Achievement Showcase & Tracker</h2>
+              <span class="section-count-badge">Interactive XP Rewards</span>
+            </div>
+            <span style="font-size: 0.85rem; color: var(--neon-emerald);">⚡ Click to mark achievements and level up!</span>
+          </div>
+
+          <!-- Rarity Filter Chips -->
+          <div class="library-filter-toolbar">
+            <div class="filter-tags-wrap">
+              <button class="filter-tag-chip active" data-ach-filter="all">All Tiers</button>
+              <button class="filter-tag-chip" data-ach-filter="unlocked">Unlocked Only</button>
+              <button class="filter-tag-chip" data-ach-filter="locked">Locked Only</button>
+              <button class="filter-tag-chip" data-ach-filter="legendary">Legendary</button>
+              <button class="filter-tag-chip" data-ach-filter="epic">Epic</button>
+              <button class="filter-tag-chip" data-ach-filter="rare">Rare</button>
+            </div>
+          </div>
+
+          <div id="achievements-list-container" class="achievements-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 5: PLAYTIME STATISTICS & ANALYTICS
+             ========================================== -->
+        <section id="tab-analytics" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Playtime Statistics & Deep Analytics</h2>
+              <span class="section-count-badge">Visual Telemetry</span>
+            </div>
+          </div>
+
+          <!-- Highlight Metric Badges -->
+          <div class="profile-stats-grid" style="margin-top: 0; margin-bottom: 1.5rem;">
+            <div class="stat-widget-card">
+              <div class="stat-icon-wrap purple">⚡</div>
+              <div class="stat-widget-info">
+                <div class="stat-value" id="metric-avg-daily">5.4h</div>
+                <div class="stat-label">Daily Average</div>
+              </div>
+            </div>
+            <div class="stat-widget-card">
+              <div class="stat-icon-wrap cyan">🔥</div>
+              <div class="stat-widget-info">
+                <div class="stat-value" id="metric-longest-session">8.4h</div>
+                <div class="stat-label">Longest Marathon</div>
+              </div>
+            </div>
+            <div class="stat-widget-card">
+              <div class="stat-icon-wrap emerald">🎯</div>
+              <div class="stat-widget-info">
+                <div class="stat-value">Top 1%</div>
+                <div class="stat-label">Global Play Rank</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-grid">
+            <!-- Genre Breakdown Donut Chart -->
+            <div class="chart-card">
+              <h3 style="font-weight: 700; color: var(--text-white);">Genre Time Distribution</h3>
+              <div class="donut-canvas-wrap">
+                <canvas id="chart-genre-canvas"></canvas>
+              </div>
+              <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 0.8rem;">
+                <span style="color: #8b5cf6;">● Action RPG</span>
+                <span style="color: #06b6d4;">● Tactical Shooter</span>
+                <span style="color: #10b981;">● MMO / Sci-Fi</span>
+                <span style="color: #f59e0b;">● Battle Royale</span>
+                <span style="color: #ec4899;">● Hero Shooter</span>
+              </div>
+            </div>
+
+            <!-- Top Played Games Bar Visualizer -->
+            <div class="chart-card">
+              <h3 style="font-weight: 700; color: var(--text-white);">Most Played Leaderboard</h3>
+              <div id="top-games-leaderboard" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 6: WISHLIST
+             ========================================== -->
+        <section id="tab-wishlist" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">My Wishlist & Anticipated Titles</h2>
+              <span class="section-count-badge">Upcoming Releases</span>
+            </div>
+            <button class="btn-primary btn-sm" data-tab="discover">+ Browse More to Wishlist</button>
+          </div>
+
+          <div id="wishlist-container" class="wishlist-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 7: GAMING NEWS & GIVEAWAYS
+             ========================================== -->
+        <section id="tab-news" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Gaming News & Giveaway Alerts</h2>
+              <span class="section-count-badge">Real-Time Radar</span>
+            </div>
+          </div>
+
+          <div class="news-layout-grid">
+            <div>
+              <h3 style="font-weight: 700; margin-bottom: 1rem; color: var(--text-white);">Latest Headlines</h3>
+              <div id="news-cards-container" class="news-cards-list"></div>
+            </div>
+
+            <div class="giveaways-panel">
+              <h3 style="font-weight: 700; color: var(--neon-amber);">🎁 Active Free Giveaways</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted);">Limited-time loot, keys, and starter packs curated for your profile.</p>
+              <div id="giveaways-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Mobile Bottom Navigation Dock -->
+    <nav class="mobile-nav-dock">
+      <button class="mobile-dock-btn active" data-tab="dashboard">
+        <span class="dock-icon">🏠</span>
+        <span>Home</span>
+      </button>
+      <button class="mobile-dock-btn" data-tab="library">
+        <span class="dock-icon">🕹️</span>
+        <span>Library</span>
+      </button>
+      <button class="mobile-dock-btn" data-tab="discover">
+        <span class="dock-icon">🌐</span>
+        <span>Discover</span>
+      </button>
+      <button class="mobile-dock-btn" data-tab="achievements">
+        <span class="dock-icon">🏆</span>
+        <span>Achievements</span>
+      </button>
+      <button class="mobile-dock-btn" data-tab="analytics">
+        <span class="dock-icon">📊</span>
+        <span>Stats</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: GAME DETAILS & SCREENSHOTS
+       ========================================== -->
+  <div id="game-details-modal" class="modal-backdrop">
+    <div class="game-modal-dialog">
+      <button class="modal-close-btn" title="Close">✕</button>
+      <div class="game-modal-hero">
+        <img id="modal-game-hero" src="" alt="Hero Backdrop">
+        <div class="game-modal-hero-overlay">
+          <div>
+            <span id="modal-game-genre" class="genre-tag">Action RPG</span>
+            <h2 id="modal-game-title" class="game-modal-title">Cyberpunk 2077</h2>
+            <div id="modal-game-dev" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">CD PROJEKT RED</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-modal-body">
+        <div class="modal-action-bar">
+          <div style="display: flex; gap: 10px;">
+            <button id="modal-btn-play" class="btn-play-game" style="padding: 10px 20px;">
+              ▶ Play Now
+            </button>
+            <button id="modal-btn-add-library" class="btn-primary">
+              + Add to Library
+            </button>
+          </div>
+          <span style="color: var(--neon-emerald); font-weight: 700; font-size: 0.9rem;">✓ Verified Compatible</span>
+        </div>
+
+        <div>
+          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 8px;">About the Game</h4>
+          <p id="modal-game-desc" style="color: var(--text-muted); line-height: 1.6;"></p>
+        </div>
+
+        <div>
+          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 12px;">Minimum System Specifications</h4>
+          <div id="modal-specs-container" class="modal-specs-grid"></div>
+        </div>
+
+        <div>
+          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 12px;">Screenshots & Media</h4>
+          <div id="modal-screenshots-gallery" class="screenshot-gallery"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: EDIT PROFILE
+       ========================================== -->
+  <div id="edit-profile-modal" class="modal-backdrop">
+    <div class="game-modal-dialog edit-profile-dialog">
+      <button class="modal-close-btn" title="Close">✕</button>
+      <div style="padding: 1.8rem;">
+        <h3 style="font-family: var(--font-heading); font-weight: 800; font-size: 1.5rem; margin-bottom: 1.2rem; color: #fff;">
+          Edit Gamer Profile
+        </h3>
+
+        <div class="form-group">
+          <label class="form-label">Gamertag</label>
+          <input type="text" id="input-edit-gamertag" class="form-input" value="V0RT3X_KNIGHT">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Choose Avatar</label>
+          <div class="avatar-selection-row">
+            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar 1" class="avatar-choice selected">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="Avatar 2" class="avatar-choice">
+            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&auto=format&fit=crop&q=80" alt="Avatar 3" class="avatar-choice">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80" alt="Avatar 4" class="avatar-choice">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Avatar 5" class="avatar-choice">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Gamer Bio</label>
+          <textarea id="input-edit-bio" class="form-textarea" rows="3"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+          <button class="btn-secondary" onclick="document.getElementById('edit-profile-modal').classList.remove('open')">Cancel</button>
+          <button id="btn-save-profile" class="btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: LEVEL UP CELEBRATION
+       ========================================== -->
+  <div id="level-up-modal" class="level-up-overlay">
+    <div class="level-up-box">
+      <div class="level-up-badge" id="level-up-badge-val">48</div>
+      <h2 class="level-up-title">LEVEL UP!</h2>
+      <p class="level-up-subtitle">Congratulations! You've advanced your Gamer Tier and unlocked new prestige perks.</p>
+      <button id="btn-close-levelup" class="btn-primary" style="padding: 10px 24px; font-size: 1rem;">
+        Claim Prestige Rewards
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/state.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
