@@ -1,6 +1,6 @@
 /**
  * APEXPLAY STATE MANAGEMENT
- * Handles reactive profile, library, achievements, wishlist, and statistics with localStorage persistence.
+ * Handles reactive profile, library, shelves, lists, journal, achievements, wishlist, and statistics with localStorage persistence.
  */
 
 const STORAGE_KEY = 'apexplay_gaming_state_v1';
@@ -19,13 +19,101 @@ const DEFAULT_STATE = {
     currentPlaying: 'Cyberpunk 2077',
     bio: 'Competitive FPS & immersive RPG enthusiast. Building the ultimate sci-fi backcatalog. Always down for co-op raids!',
     badges: [
-      { id: 'b1', name: 'Aim God', icon: '🎯', desc: 'Maintained 60%+ headshot accuracy in 50 matches' },
-      { id: 'b2', name: 'Platinum Collector', icon: '🏆', desc: '100% completed 12 AAA titles' },
-      { id: 'b3', name: 'Night Owl', icon: '🌙', desc: 'Over 500 hours logged between midnight and 5 AM' },
-      { id: 'b4', name: 'Speedrunner', icon: '⚡', desc: 'Top 5% completion speed in Elden Ring' }
+      { id: 'b1', name: 'Aim God', icon: 'target', desc: 'Maintained 60%+ headshot accuracy in 50 matches' },
+      { id: 'b2', name: 'Platinum Collector', icon: 'trophy', desc: '100% completed 12 AAA titles' },
+      { id: 'b3', name: 'Night Owl', icon: 'moon', desc: 'Over 500 hours logged between midnight and 5 AM' },
+      { id: 'b4', name: 'Speedrunner', icon: 'zap', desc: 'Top 5% completion speed in Elden Ring' }
     ]
   },
+  settings: {
+    theme: 'dark', // 'dark' | 'light'
+    accentColor: '#4F8CFF',
+    reduceMotion: false,
+    soundFx: true,
+    notifications: true,
+    defaultLibraryView: 'grid'
+  },
   activeSession: null, // { gameId, gameTitle, startTime }
+  playHistory: [
+    {
+      id: 'sess-1',
+      gameId: 'g-cyberpunk',
+      gameTitle: 'Cyberpunk 2077: Phantom Liberty',
+      date: 'Today',
+      rawDate: '2026-09-16',
+      durationHours: 2.5,
+      note: 'Completed the infiltration mission in Dogtown. Night City looks staggering with path tracing.'
+    },
+    {
+      id: 'sess-2',
+      gameId: 'g-eldenring',
+      gameTitle: 'Elden Ring: Shadow of the Erdtree',
+      date: 'Yesterday',
+      rawDate: '2026-09-15',
+      durationHours: 1.8,
+      note: 'Explored Scaduview and defeated the black knight garrison.'
+    },
+    {
+      id: 'sess-3',
+      gameId: 'g-cyberpunk',
+      gameTitle: 'Cyberpunk 2077: Phantom Liberty',
+      date: 'Sep 13',
+      rawDate: '2026-09-13',
+      durationHours: 3.2,
+      note: 'Unlocked all Relic attribute perks. Fast-paced katana build feels fluid.'
+    },
+    {
+      id: 'sess-4',
+      gameId: 'g-valorant',
+      gameTitle: 'Valorant',
+      date: 'Sep 11',
+      rawDate: '2026-09-11',
+      durationHours: 1.5,
+      note: 'Scored an Ace in overtime match on Ascent. Ranked up.'
+    }
+  ],
+  shelves: [
+    {
+      id: 'shelf-favs',
+      name: 'Favorites',
+      description: 'Games that define my taste and that I return to consistently.',
+      gameIds: ['g-cyberpunk', 'g-eldenring', 'g-witcher3']
+    },
+    {
+      id: 'shelf-100',
+      name: '100% Completed',
+      description: 'Games where every achievement and milestone was conquered.',
+      gameIds: ['g-eldenring']
+    },
+    {
+      id: 'shelf-weekend',
+      name: 'Weekend Games',
+      description: 'Jump-in titles perfect for quick casual sessions or raid nights.',
+      gameIds: ['g-valorant', 'g-hades2']
+    },
+    {
+      id: 'shelf-finish',
+      name: 'Games I Want To Finish',
+      description: 'Priority backlog candidates to complete before new releases.',
+      gameIds: ['g-destiny2', 'g-hades2']
+    }
+  ],
+  lists: [
+    {
+      id: 'list-rpgs',
+      title: "Best RPGs I've Played",
+      description: 'A personal ranking of the most immersive role-playing experiences.',
+      ranked: true,
+      gameIds: ['g-eldenring', 'g-cyberpunk', 'g-witcher3', 'g-baldursgate']
+    },
+    {
+      id: 'list-backlog',
+      title: 'Games I Want To Finish',
+      description: 'Curated priority backlog titles with standout stories.',
+      ranked: false,
+      gameIds: ['g-destiny2', 'g-hades2']
+    }
+  ],
   library: [
     {
       id: 'g-cyberpunk',
@@ -43,12 +131,19 @@ const DEFAULT_STATE = {
       playtimeHours: 194.5,
       lastPlayed: '2 hours ago',
       rating: 9.4,
-      status: 'Playing', // 'Playing' | 'Completed' | 'Backlog' | 'Installed'
+      userRating: 4.5,
+      userReview: 'Phantom Liberty fixes everything that was missing at launch. Dogtown is dense, gritty, and the espionage narrative keeps you hooked from start to finish.',
+      status: 'Playing', // 'Playing' | 'Completed' | 'Backlog' | 'Wishlist' | 'Dropped'
       favorite: true,
       developer: 'CD PROJEKT RED',
       releaseDate: '2023-09-26',
       achievementsTotal: 48,
       achievementsUnlocked: 41,
+      hltb: {
+        mainStory: 25,
+        mainExtra: 60,
+        completionist: 100
+      },
       minSpecs: {
         os: 'Windows 10 64-bit',
         cpu: 'Core i7-6700 or Ryzen 5 1600',
@@ -61,7 +156,7 @@ const DEFAULT_STATE = {
       id: 'g-eldenring',
       apiId: null,
       title: 'Elden Ring: Shadow of the Erdtree',
-      genre: 'Soulslike / Action RPG',
+      genre: 'Action RPG / Soulslike',
       platform: 'PC',
       banner: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop&q=80',
       screenshots: [
@@ -72,12 +167,19 @@ const DEFAULT_STATE = {
       playtimeHours: 242.0,
       lastPlayed: 'Yesterday',
       rating: 9.8,
+      userRating: 5.0,
+      userReview: 'Masterpiece world design and boss encounters. The Land of Shadow sets a new standard for DLC scale and atmosphere.',
       status: 'Completed',
       favorite: true,
       developer: 'FromSoftware',
       releaseDate: '2024-06-21',
       achievementsTotal: 42,
       achievementsUnlocked: 42,
+      hltb: {
+        mainStory: 58,
+        mainExtra: 102,
+        completionist: 135
+      },
       minSpecs: {
         os: 'Windows 10',
         cpu: 'Intel Core i5-8400 | AMD Ryzen 3 3300X',
@@ -100,47 +202,21 @@ const DEFAULT_STATE = {
       playtimeHours: 388.2,
       lastPlayed: '3 days ago',
       rating: 8.9,
+      userRating: 4.0,
+      userReview: 'Crisp gunplay and highly competitive ranked ladder. Best experienced with a coordinated five-stack.',
       status: 'Playing',
       favorite: true,
       developer: 'Riot Games',
       releaseDate: '2020-06-02',
       achievementsTotal: 30,
       achievementsUnlocked: 24,
+      hltb: null,
       minSpecs: {
         os: 'Windows 10 64-bit',
         cpu: 'Intel Core 2 Duo E8400',
         ram: '4 GB RAM',
         gpu: 'Intel HD 4000',
         storage: '20 GB'
-      }
-    },
-    {
-      id: 'g-overwatch',
-      apiId: 540,
-      title: 'Overwatch 2',
-      genre: 'Shooter / Hero',
-      platform: 'PC',
-      banner: 'https://www.freetogame.com/g/540/thumbnail.jpg',
-      screenshots: [
-        'https://www.freetogame.com/g/540/overwatch-2-1.jpg',
-        'https://www.freetogame.com/g/540/overwatch-2-2.jpg'
-      ],
-      description: 'A hero-focused first-person team shooter from Blizzard Entertainment with always-on and ever-evolving live competition.',
-      playtimeHours: 165.4,
-      lastPlayed: '5 days ago',
-      rating: 8.3,
-      status: 'Installed',
-      favorite: false,
-      developer: 'Blizzard Entertainment',
-      releaseDate: '2022-10-04',
-      achievementsTotal: 35,
-      achievementsUnlocked: 19,
-      minSpecs: {
-        os: 'Windows 10 64-bit',
-        cpu: 'Intel Core i3 or AMD Phenom X3 8650',
-        ram: '6 GB RAM',
-        gpu: 'GeForce GTX 600 series',
-        storage: '50 GB'
       }
     },
     {
@@ -157,18 +233,162 @@ const DEFAULT_STATE = {
       playtimeHours: 412.0,
       lastPlayed: '1 week ago',
       rating: 9.1,
+      userRating: 4.5,
+      userReview: 'The narrative conclusion to the Light and Darkness saga delivered on every emotional beat. Salvation’s Edge is one of the best raids in the franchise.',
       status: 'Backlog',
       favorite: false,
       developer: 'Bungie',
       releaseDate: '2019-10-01',
       achievementsTotal: 50,
       achievementsUnlocked: 38,
+      hltb: {
+        mainStory: 18,
+        mainExtra: 55,
+        completionist: 120
+      },
       minSpecs: {
         os: 'Windows 10',
         cpu: 'Intel Core i3 3250',
         ram: '6 GB RAM',
         gpu: 'NVIDIA GeForce GTX 660',
         storage: '105 GB'
+      }
+    },
+    {
+      id: 'g-hades2',
+      apiId: null,
+      title: 'Hades II',
+      genre: 'Action / Roguelike',
+      platform: 'PC',
+      banner: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+      screenshots: [
+        'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+      ],
+      description: 'Battle beyond the Underworld using dark sorcery to take on the Titan of Time in this bewitching sequel to the award-winning rogue-like dungeon crawler.',
+      playtimeHours: 34.5,
+      lastPlayed: '2 weeks ago',
+      rating: 9.6,
+      userRating: 4.5,
+      userReview: 'Melinoë feels completely distinct from Zagreus. Witchcraft mechanics add great depth to builds.',
+      status: 'Backlog',
+      favorite: true,
+      developer: 'Supergiant Games',
+      releaseDate: '2024-05-06',
+      achievementsTotal: 36,
+      achievementsUnlocked: 18,
+      hltb: {
+        mainStory: 22,
+        mainExtra: 50,
+        completionist: 95
+      },
+      minSpecs: {
+        os: 'Windows 10 64-bit',
+        cpu: 'Dual Core 2.4 GHz',
+        ram: '8 GB RAM',
+        gpu: 'GeForce GTX 950 / Radeon HD 7870',
+        storage: '10 GB'
+      }
+    },
+    {
+      id: 'g-witcher3',
+      apiId: null,
+      title: 'The Witcher 3: Wild Hunt',
+      genre: 'RPG / Open World',
+      platform: 'PC',
+      banner: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80',
+      screenshots: [
+        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'
+      ],
+      description: 'As war rages on throughout the Northern Realms, you take on the greatest contract of your life — tracking down the Child of Prophecy.',
+      playtimeHours: 186.0,
+      lastPlayed: '3 weeks ago',
+      rating: 9.7,
+      userRating: 5.0,
+      userReview: 'Peak storytelling and side quest design. Blood and Wine remains the gold standard of video game expansions.',
+      status: 'Completed',
+      favorite: true,
+      developer: 'CD PROJEKT RED',
+      releaseDate: '2015-05-18',
+      achievementsTotal: 78,
+      achievementsUnlocked: 78,
+      hltb: {
+        mainStory: 52,
+        mainExtra: 104,
+        completionist: 173
+      },
+      minSpecs: {
+        os: 'Windows 10',
+        cpu: 'Intel Core i5-2500K 3.3GHz',
+        ram: '6 GB RAM',
+        gpu: 'Nvidia GeForce GTX 660',
+        storage: '50 GB'
+      }
+    },
+    {
+      id: 'g-baldursgate',
+      apiId: null,
+      title: "Baldur's Gate 3",
+      genre: 'RPG / Turn-Based',
+      platform: 'PC',
+      banner: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+      screenshots: [
+        'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80'
+      ],
+      description: 'Gather your party and return to the Forgotten Realms in a tale of fellowship and betrayal, sacrifice and survival, and the lure of absolute power.',
+      playtimeHours: 160.0,
+      lastPlayed: 'Last month',
+      rating: 9.9,
+      userRating: 5.0,
+      userReview: 'Unmatched player freedom and branching quest consequences. A generational RPG landmark.',
+      status: 'Completed',
+      favorite: true,
+      developer: 'Larian Studios',
+      releaseDate: '2023-08-03',
+      achievementsTotal: 54,
+      achievementsUnlocked: 48,
+      hltb: {
+        mainStory: 68,
+        mainExtra: 110,
+        completionist: 156
+      },
+      minSpecs: {
+        os: 'Windows 10 64-bit',
+        cpu: 'Intel I5 4690 / AMD FX 8350',
+        ram: '8 GB RAM',
+        gpu: 'Nvidia GTX 970 / RX 480 (4GB+ of VRAM)',
+        storage: '150 GB'
+      }
+    },
+    {
+      id: 'g-overwatch',
+      apiId: 540,
+      title: 'Overwatch 2',
+      genre: 'Shooter / Hero',
+      platform: 'PC',
+      banner: 'https://www.freetogame.com/g/540/thumbnail.jpg',
+      screenshots: [
+        'https://www.freetogame.com/g/540/overwatch-2-1.jpg',
+        'https://www.freetogame.com/g/540/overwatch-2-2.jpg'
+      ],
+      description: 'A hero-focused first-person team shooter from Blizzard Entertainment with always-on and ever-evolving live competition.',
+      playtimeHours: 165.4,
+      lastPlayed: '1 month ago',
+      rating: 8.3,
+      userRating: 3.5,
+      userReview: 'Good core hero design, but matchmaking balance and battle pass focus diminished long-term enthusiasm.',
+      status: 'Dropped',
+      favorite: false,
+      developer: 'Blizzard Entertainment',
+      releaseDate: '2022-10-04',
+      achievementsTotal: 35,
+      achievementsUnlocked: 19,
+      hltb: null,
+      minSpecs: {
+        os: 'Windows 10 64-bit',
+        cpu: 'Intel Core i3 or AMD Phenom X3 8650',
+        ram: '6 GB RAM',
+        gpu: 'GeForce GTX 600 series',
+        storage: '50 GB'
       }
     },
     {
@@ -183,14 +403,17 @@ const DEFAULT_STATE = {
       ],
       description: 'Master an expanding roster of legendary characters with powerful abilities in a strategic team-based battle royale.',
       playtimeHours: 218.7,
-      lastPlayed: '2 weeks ago',
+      lastPlayed: '2 months ago',
       rating: 8.8,
-      status: 'Installed',
+      userRating: 3.5,
+      userReview: 'Superb movement mechanics and sliding velocity, though ranked solo-queue can be exhausting.',
+      status: 'Dropped',
       favorite: false,
       developer: 'Respawn Entertainment',
       releaseDate: '2019-02-04',
       achievementsTotal: 25,
       achievementsUnlocked: 18,
+      hltb: null,
       minSpecs: {
         os: 'Windows 10 64-bit',
         cpu: 'Intel Core i3-6300',
@@ -245,7 +468,7 @@ const DEFAULT_STATE = {
       xp: 250,
       unlocked: true,
       unlockedDate: '2026-09-10',
-      icon: '🌅'
+      icon: 'sunrise'
     },
     {
       id: 'ach-2',
@@ -256,7 +479,7 @@ const DEFAULT_STATE = {
       xp: 150,
       unlocked: true,
       unlockedDate: '2026-09-08',
-      icon: '🧠'
+      icon: 'brain'
     },
     {
       id: 'ach-3',
@@ -267,7 +490,7 @@ const DEFAULT_STATE = {
       xp: 300,
       unlocked: true,
       unlockedDate: '2026-08-28',
-      icon: '🔥'
+      icon: 'flame'
     },
     {
       id: 'ach-4',
@@ -278,7 +501,7 @@ const DEFAULT_STATE = {
       xp: 350,
       unlocked: true,
       unlockedDate: '2026-08-20',
-      icon: '⚔️'
+      icon: 'swords'
     },
     {
       id: 'ach-5',
@@ -289,7 +512,7 @@ const DEFAULT_STATE = {
       xp: 200,
       unlocked: true,
       unlockedDate: '2026-09-05',
-      icon: '👑'
+      icon: 'crown'
     },
     {
       id: 'ach-6',
@@ -300,7 +523,7 @@ const DEFAULT_STATE = {
       xp: 100,
       unlocked: false,
       unlockedDate: null,
-      icon: '💣'
+      icon: 'bomb'
     },
     {
       id: 'ach-7',
@@ -311,7 +534,7 @@ const DEFAULT_STATE = {
       xp: 400,
       unlocked: true,
       unlockedDate: '2026-07-14',
-      icon: '🌌'
+      icon: 'sparkles'
     },
     {
       id: 'ach-8',
@@ -322,7 +545,7 @@ const DEFAULT_STATE = {
       xp: 120,
       unlocked: false,
       unlockedDate: null,
-      icon: '💥'
+      icon: 'zap'
     },
     {
       id: 'ach-9',
@@ -333,7 +556,7 @@ const DEFAULT_STATE = {
       xp: 500,
       unlocked: false,
       unlockedDate: null,
-      icon: '☠️'
+      icon: 'skull'
     }
   ],
   stats: {
@@ -347,11 +570,11 @@ const DEFAULT_STATE = {
       { day: 'Sun', hours: 7.1 }
     ],
     genreBreakdown: [
-      { genre: 'Action RPG', hours: 536.5, color: '#8b5cf6' },
-      { genre: 'Tactical Shooter', hours: 388.2, color: '#06b6d4' },
-      { genre: 'MMO / Sci-Fi', hours: 412.0, color: '#10b981' },
-      { genre: 'Battle Royale', hours: 218.7, color: '#f59e0b' },
-      { genre: 'Hero Shooter', hours: 165.4, color: '#ec4899' }
+      { genre: 'Action RPG', hours: 536.5, color: '#4F8CFF' },
+      { genre: 'Tactical Shooter', hours: 388.2, color: '#39C98A' },
+      { genre: 'MMO / Sci-Fi', hours: 412.0, color: '#E8B84A' },
+      { genre: 'Battle Royale', hours: 218.7, color: '#EF6262' },
+      { genre: 'Hero Shooter', hours: 165.4, color: '#9AA4B2' }
     ],
     longestSession: 8.4,
     averageDaily: 5.4,
@@ -432,7 +655,54 @@ class GameState {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        // Seamless backward-compatible migration
+        if (!parsed.shelves) parsed.shelves = JSON.parse(JSON.stringify(DEFAULT_STATE.shelves));
+        if (!parsed.lists) parsed.lists = JSON.parse(JSON.stringify(DEFAULT_STATE.lists));
+        if (!parsed.playHistory) parsed.playHistory = JSON.parse(JSON.stringify(DEFAULT_STATE.playHistory));
+        if (!parsed.settings) parsed.settings = JSON.parse(JSON.stringify(DEFAULT_STATE.settings));
+        
+        // Migrate legacy emoji icons in badges and achievements to Lucide icon keys
+        const EMOJI_TO_ICON_MAP = {
+          '\u{1F3AF}': 'target',
+          '\u{1F3C6}': 'trophy',
+          '\u{1F319}': 'moon',
+          '\u{26A1}': 'zap',
+          '\u{1F305}': 'sunrise',
+          '\u{1F9E0}': 'brain',
+          '\u{1F525}': 'flame',
+          '\u{2694}': 'swords',
+          '\u{2694}\u{FE0F}': 'swords',
+          '\u{1F451}': 'crown',
+          '\u{1F4A3}': 'bomb',
+          '\u{1F30C}': 'sparkles',
+          '\u{1F4A5}': 'zap',
+          '\u{2620}': 'skull',
+          '\u{2620}\u{FE0F}': 'skull'
+        };
+
+        if (parsed.profile && Array.isArray(parsed.profile.badges)) {
+          parsed.profile.badges.forEach(b => {
+            if (EMOJI_TO_ICON_MAP[b.icon]) b.icon = EMOJI_TO_ICON_MAP[b.icon];
+          });
+        }
+        if (Array.isArray(parsed.achievements)) {
+          parsed.achievements.forEach(a => {
+            if (EMOJI_TO_ICON_MAP[a.icon]) a.icon = EMOJI_TO_ICON_MAP[a.icon];
+          });
+        }
+
+        // Migrate library game statuses and attributes if missing
+        if (Array.isArray(parsed.library)) {
+          parsed.library.forEach(g => {
+            if (g.status === 'Installed') g.status = 'Playing';
+            if (typeof g.userRating === 'undefined') {
+              g.userRating = g.rating ? Math.min(5, parseFloat((g.rating / 2).toFixed(1))) : 4.0;
+            }
+            if (typeof g.userReview === 'undefined') g.userReview = '';
+          });
+        }
+        return parsed;
       }
     } catch (e) {
       console.warn('Failed to parse saved state, using default:', e);
@@ -488,9 +758,15 @@ class GameState {
   }
 
   // Library actions
-  addToLibrary(game) {
+  addToLibrary(game, initialStatus = 'Backlog') {
     const existing = this.state.library.find(g => g.id === game.id || (game.apiId && g.apiId === game.apiId));
-    if (existing) return false;
+    if (existing) {
+      if (initialStatus && existing.status !== initialStatus) {
+        existing.status = initialStatus;
+        this.save();
+      }
+      return false;
+    }
 
     const newGame = {
       id: game.id || `g-api-${game.apiId || Date.now()}`,
@@ -502,14 +778,17 @@ class GameState {
       screenshots: game.screenshots && game.screenshots.length > 0 ? game.screenshots : [game.banner || game.thumbnail],
       description: game.description || game.short_description || 'No description available.',
       playtimeHours: 0,
-      lastPlayed: 'Just added',
-      rating: (Math.random() * 2 + 7.5).toFixed(1),
-      status: 'Installed',
+      lastPlayed: 'Never played',
+      rating: game.rating || (Math.random() * 2 + 7.5).toFixed(1),
+      userRating: 0,
+      userReview: '',
+      status: initialStatus, // 'Playing' | 'Completed' | 'Backlog' | 'Wishlist' | 'Dropped'
       favorite: false,
       developer: game.developer || 'Unknown Studio',
       releaseDate: game.releaseDate || game.release_date || '2024',
       achievementsTotal: 20,
       achievementsUnlocked: 0,
+      hltb: null,
       minSpecs: game.minSpecs || game.minimum_system_requirements || {
         os: 'Windows 10',
         cpu: 'Intel i5 or AMD Ryzen',
@@ -520,7 +799,6 @@ class GameState {
     };
 
     this.state.library.unshift(newGame);
-    // Remove from wishlist if present
     this.removeFromWishlist(newGame.title);
     this.save();
     return true;
@@ -528,6 +806,17 @@ class GameState {
 
   removeFromLibrary(gameId) {
     this.state.library = this.state.library.filter(g => g.id !== gameId);
+    // Also remove from shelves and lists
+    if (this.state.shelves) {
+      this.state.shelves.forEach(s => {
+        s.gameIds = s.gameIds.filter(id => id !== gameId);
+      });
+    }
+    if (this.state.lists) {
+      this.state.lists.forEach(l => {
+        l.gameIds = l.gameIds.filter(id => id !== gameId);
+      });
+    }
     this.save();
   }
 
@@ -535,6 +824,15 @@ class GameState {
     const game = this.state.library.find(g => g.id === gameId);
     if (game) {
       game.favorite = !game.favorite;
+      // Sync with 'Favorites' shelf if exists
+      const favShelf = this.state.shelves ? this.state.shelves.find(s => s.id === 'shelf-favs') : null;
+      if (favShelf) {
+        if (game.favorite && !favShelf.gameIds.includes(gameId)) {
+          favShelf.gameIds.push(gameId);
+        } else if (!game.favorite) {
+          favShelf.gameIds = favShelf.gameIds.filter(id => id !== gameId);
+        }
+      }
       this.save();
     }
   }
@@ -543,11 +841,36 @@ class GameState {
     const game = this.state.library.find(g => g.id === gameId);
     if (game) {
       game.status = status;
+      // If status is 'Completed' and has 100% achievements, sync with 100% shelf
+      const compShelf = this.state.shelves ? this.state.shelves.find(s => s.id === 'shelf-100') : null;
+      if (compShelf) {
+        if (status === 'Completed' && game.achievementsUnlocked >= game.achievementsTotal && !compShelf.gameIds.includes(gameId)) {
+          compShelf.gameIds.push(gameId);
+        } else if (status !== 'Completed') {
+          compShelf.gameIds = compShelf.gameIds.filter(id => id !== gameId);
+        }
+      }
       this.save();
     }
   }
 
-  logPlaytime(gameId, additionalHours) {
+  setGameRating(gameId, rating) {
+    const game = this.state.library.find(g => g.id === gameId);
+    if (game) {
+      game.userRating = parseFloat(rating);
+      this.save();
+    }
+  }
+
+  setGameReview(gameId, reviewText) {
+    const game = this.state.library.find(g => g.id === gameId);
+    if (game) {
+      game.userReview = reviewText;
+      this.save();
+    }
+  }
+
+  logPlaytime(gameId, additionalHours, optionalNote = '') {
     const game = this.state.library.find(g => g.id === gameId);
     if (game) {
       game.playtimeHours = parseFloat((game.playtimeHours + additionalHours).toFixed(1));
@@ -559,9 +882,131 @@ class GameState {
         lastDay.hours = parseFloat((lastDay.hours + additionalHours).toFixed(1));
       }
 
+      // Add to gaming journal playHistory
+      if (!this.state.playHistory) this.state.playHistory = [];
+      this.state.playHistory.unshift({
+        id: `sess-${Date.now()}`,
+        gameId: game.id,
+        gameTitle: game.title,
+        date: 'Today',
+        rawDate: new Date().toISOString().split('T')[0],
+        durationHours: additionalHours,
+        note: optionalNote || ''
+      });
+
       this.addXP(Math.round(additionalHours * 100));
       this.save();
     }
+  }
+
+  // Journal note action
+  updateJournalNote(entryId, note) {
+    if (!this.state.playHistory) return;
+    const entry = this.state.playHistory.find(e => e.id === entryId);
+    if (entry) {
+      entry.note = note;
+      this.save();
+    }
+  }
+
+  deleteJournalEntry(entryId) {
+    if (!this.state.playHistory) return;
+    this.state.playHistory = this.state.playHistory.filter(e => e.id !== entryId);
+    this.save();
+  }
+
+  // Custom Shelves actions
+  createShelf(name, description = '', gameIds = []) {
+    if (!this.state.shelves) this.state.shelves = [];
+    const newShelf = {
+      id: `shelf-${Date.now()}`,
+      name: name.trim(),
+      description: description.trim(),
+      gameIds: gameIds
+    };
+    this.state.shelves.push(newShelf);
+    this.save();
+    return newShelf;
+  }
+
+  deleteShelf(shelfId) {
+    if (!this.state.shelves) return;
+    this.state.shelves = this.state.shelves.filter(s => s.id !== shelfId);
+    this.save();
+  }
+
+  toggleGameInShelf(shelfId, gameId) {
+    if (!this.state.shelves) return;
+    const shelf = this.state.shelves.find(s => s.id === shelfId);
+    if (shelf) {
+      const idx = shelf.gameIds.indexOf(gameId);
+      if (idx > -1) {
+        shelf.gameIds.splice(idx, 1);
+      } else {
+        shelf.gameIds.push(gameId);
+      }
+      this.save();
+    }
+  }
+
+  // Custom Lists actions
+  createList(title, description = '', ranked = false, gameIds = []) {
+    if (!this.state.lists) this.state.lists = [];
+    const newList = {
+      id: `list-${Date.now()}`,
+      title: title.trim(),
+      description: description.trim(),
+      ranked: !!ranked,
+      gameIds: gameIds
+    };
+    this.state.lists.push(newList);
+    this.save();
+    return newList;
+  }
+
+  deleteList(listId) {
+    if (!this.state.lists) return;
+    this.state.lists = this.state.lists.filter(l => l.id !== listId);
+    this.save();
+  }
+
+  toggleGameInList(listId, gameId) {
+    if (!this.state.lists) return;
+    const list = this.state.lists.find(l => l.id === listId);
+    if (list) {
+      const idx = list.gameIds.indexOf(gameId);
+      if (idx > -1) {
+        list.gameIds.splice(idx, 1);
+      } else {
+        list.gameIds.push(gameId);
+      }
+      this.save();
+    }
+  }
+
+  // Settings actions
+  updateSettings(updates) {
+    if (!this.state.settings) this.state.settings = { ...DEFAULT_STATE.settings };
+    this.state.settings = { ...this.state.settings, ...updates };
+    this.save();
+  }
+
+  exportData() {
+    return JSON.stringify(this.state, null, 2);
+  }
+
+  importData(jsonString) {
+    try {
+      const parsed = JSON.parse(jsonString);
+      if (parsed && parsed.library && parsed.profile) {
+        this.state = parsed;
+        this.save();
+        return true;
+      }
+    } catch (e) {
+      console.error('Import error:', e);
+    }
+    return false;
   }
 
   // Wishlist actions
@@ -600,6 +1045,20 @@ class GameState {
     if (ach.unlocked) {
       ach.unlockedDate = new Date().toISOString().split('T')[0];
       const xpRes = this.addXP(ach.xp);
+
+      // Add achievement unlock entry to gaming journal
+      if (!this.state.playHistory) this.state.playHistory = [];
+      this.state.playHistory.unshift({
+        id: `ach-sess-${Date.now()}`,
+        gameId: null,
+        gameTitle: ach.gameTitle,
+        date: 'Today',
+        rawDate: new Date().toISOString().split('T')[0],
+        durationHours: 0,
+        isAchievement: true,
+        note: `Unlocked achievement: "${ach.title}" (+${ach.xp} XP)`
+      });
+
       this.save();
       return { unlocked: true, xp: ach.xp, ...xpRes };
     } else {
@@ -626,14 +1085,14 @@ class GameState {
     return this.state.activeSession;
   }
 
-  endSession() {
+  endSession(optionalNote = '') {
     if (!this.state.activeSession) return null;
 
     const { gameId, startTime, gameTitle } = this.state.activeSession;
     const durationMs = Date.now() - startTime;
     const durationHours = Math.max(0.1, parseFloat((durationMs / (1000 * 60 * 60)).toFixed(2)));
 
-    this.logPlaytime(gameId, durationHours);
+    this.logPlaytime(gameId, durationHours, optionalNote);
     this.state.activeSession = null;
     this.state.profile.status = 'online';
     this.save();

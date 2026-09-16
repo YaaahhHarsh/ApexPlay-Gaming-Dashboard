@@ -1,6 +1,6 @@
 /**
  * APEXPLAY ANALYTICS & CANVAS CHARTS
- * Custom high-DPI Canvas charts with neon gradients, glowing paths, and interactive animations.
+ * Clean, high-DPI Canvas charts with restrained, professional styling.
  */
 
 class DashboardCharts {
@@ -23,15 +23,15 @@ class DashboardCharts {
     if (!setup) return;
     const { ctx, width, height } = setup;
 
-    const padding = { top: 25, right: 20, bottom: 35, left: 35 };
+    const padding = { top: 25, right: 20, bottom: 30, left: 35 };
     const chartW = width - padding.left - padding.right;
     const chartH = height - padding.top - padding.bottom;
 
     const maxHours = Math.max(...data.map(d => d.hours), 10);
     const colWidth = chartW / data.length;
 
-    // Background Grid
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    // Background Gridlines
+    ctx.strokeStyle = 'rgba(42, 50, 61, 0.6)';
     ctx.lineWidth = 1;
     const gridLines = 4;
     for (let i = 0; i <= gridLines; i++) {
@@ -42,47 +42,35 @@ class DashboardCharts {
       ctx.stroke();
 
       const val = Math.round(maxHours - (maxHours / gridLines) * i);
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.6)';
+      ctx.fillStyle = '#687384';
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(`${val}h`, padding.left - 8, y + 3);
     }
 
-    // Gradient Bars with Rounded Tops and Glow
+    // Clean Solid Accent Bars (No neon glow)
     data.forEach((item, idx) => {
-      const x = padding.left + idx * colWidth + colWidth * 0.2;
-      const barW = colWidth * 0.6;
+      const x = padding.left + idx * colWidth + colWidth * 0.22;
+      const barW = colWidth * 0.56;
       const barH = (item.hours / maxHours) * chartH;
       const y = padding.top + chartH - barH;
 
-      // Glow
-      ctx.shadowColor = '#8b5cf6';
-      ctx.shadowBlur = item.hours > 6 ? 15 : 8;
-
-      const grad = ctx.createLinearGradient(0, y, 0, padding.top + chartH);
-      grad.addColorStop(0, '#8b5cf6');
-      grad.addColorStop(0.6, '#06b6d4');
-      grad.addColorStop(1, 'rgba(6, 182, 212, 0.15)');
-
-      ctx.fillStyle = grad;
+      ctx.fillStyle = '#4F8CFF';
       ctx.beginPath();
-      const radius = 6;
-      ctx.roundRect(x, y, barW, barH, [radius, radius, 2, 2]);
+      const radius = 3;
+      ctx.roundRect(x, y, barW, barH, [radius, radius, 0, 0]);
       ctx.fill();
 
-      // Reset shadow
-      ctx.shadowBlur = 0;
-
       // Top value label
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 11px "Outfit", sans-serif';
+      ctx.fillStyle = '#F5F7FA';
+      ctx.font = '600 11px "Inter", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`${item.hours}h`, x + barW / 2, y - 6);
 
       // Bottom day label
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.8)';
-      ctx.font = '500 11px "Outfit", sans-serif';
-      ctx.fillText(item.day, x + barW / 2, height - 10);
+      ctx.fillStyle = '#9AA4B2';
+      ctx.font = '500 11px "Inter", sans-serif';
+      ctx.fillText(item.day, x + barW / 2, height - 8);
     });
   }
 
@@ -96,13 +84,15 @@ class DashboardCharts {
 
     const centerX = width / 2;
     const centerY = height / 2;
-    const outerRadius = Math.min(centerX, centerY) - 20;
-    const innerRadius = outerRadius * 0.62;
+    const outerRadius = Math.min(centerX, centerY) - 16;
+    const innerRadius = outerRadius * 0.65;
 
     const totalHours = data.reduce((acc, d) => acc + d.hours, 0);
     let startAngle = -Math.PI / 2;
 
-    data.forEach(item => {
+    const paletteColors = ['#4F8CFF', '#39C98A', '#E8B84A', '#6BA0FF', '#9AA4B2'];
+
+    data.forEach((item, i) => {
       const sliceAngle = (item.hours / totalHours) * (Math.PI * 2);
       const endAngle = startAngle + sliceAngle;
 
@@ -112,24 +102,22 @@ class DashboardCharts {
       ctx.arc(centerX, centerY, innerRadius, endAngle, startAngle, true);
       ctx.closePath();
 
-      ctx.fillStyle = item.color;
-      ctx.shadowColor = item.color;
-      ctx.shadowBlur = 10;
+      ctx.fillStyle = paletteColors[i % paletteColors.length];
       ctx.fill();
       ctx.restore();
 
       startAngle = endAngle;
     });
 
-    // Center text
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px "Outfit", sans-serif';
+    // Center summary text
+    ctx.fillStyle = '#F5F7FA';
+    ctx.font = '700 17px "Inter", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${Math.round(totalHours)}h`, centerX, centerY - 6);
+    ctx.fillText(`${Math.round(totalHours)}h`, centerX, centerY - 5);
 
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.7)';
-    ctx.font = '10px "Outfit", sans-serif';
+    ctx.fillStyle = '#687384';
+    ctx.font = '600 9px "Inter", sans-serif';
     ctx.fillText('TOTAL TIME', centerX, centerY + 12);
   }
 
@@ -144,19 +132,16 @@ class DashboardCharts {
       const pct = Math.round((game.playtimeHours / max) * 100);
       return `
         <div class="top-game-row">
-          <div class="top-game-info">
-            <span class="top-game-rank">0${i + 1}</span>
-            <img src="${game.banner}" alt="${game.title}" class="top-game-thumb" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100'">
-            <div class="top-game-text">
-              <div class="top-game-title">${game.title}</div>
-              <div class="top-game-genre">${game.genre}</div>
+          <span class="top-game-rank">0${i + 1}</span>
+          <img src="${game.banner}" alt="${game.title}" class="top-game-thumb" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100'">
+          <div class="top-game-text">
+            <div style="display: flex; justify-content: space-between; font-size: 0.82rem;">
+              <span class="top-game-name">${game.title}</span>
+              <span style="font-family: var(--font-mono); color: var(--text-muted);">${game.playtimeHours}h</span>
             </div>
-          </div>
-          <div class="top-game-bar-wrap">
             <div class="top-game-bar-track">
-              <div class="top-game-bar-fill" style="width: ${pct}%"></div>
+              <div class="top-game-bar-fill" style="width: ${pct}%;"></div>
             </div>
-            <span class="top-game-hours">${game.playtimeHours} hrs</span>
           </div>
         </div>
       `;

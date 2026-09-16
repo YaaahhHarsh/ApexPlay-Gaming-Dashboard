@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ApexPlay | Ultimate Gaming Profile & Dashboard</title>
-  <meta name="description" content="Experience the next-generation gaming dashboard with live library tracking, FreeToGame public API integration, achievement progress, playtime analytics, and gaming news.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2226%22 font-size=%2228%22>🎮</text></svg>">
+  <title>ApexPlay | Personal Gaming Hub</title>
+  <meta name="description" content="ApexPlay is a personal gaming platform for library management, gaming journal logging, playtime analytics, achievement tracking, and discovery.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%2024%2024%22 fill=%22%234F8CFF%22><polygon points=%225%203%2019%2012%205%2021%205%203%22/></svg>">
   
   <!-- CSS Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
@@ -13,18 +13,15 @@
   <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
-  <!-- Ambient Animated Particle Canvas -->
-  <canvas id="bg-canvas"></canvas>
-
   <div class="app-wrapper">
     <!-- Active In-Game Session Alert Bar -->
     <div id="active-session-bar" class="active-session-banner">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="status-dot-pulse" style="background: #fff; box-shadow: 0 0 10px #fff;"></span>
-        <span id="active-session-title">In-Game: Cyberpunk 2077</span>
+        <span class="status-dot-pulse"></span>
+        <span id="active-session-title">Now Playing: Cyberpunk 2077</span>
         <span class="session-badge" id="active-session-timer">00:00</span>
       </div>
-      <button class="btn-secondary btn-sm" id="btn-end-session" style="background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.3); color: #fff;">
+      <button class="btn-secondary btn-sm" id="btn-end-session">
         End Session & Log Hours
       </button>
     </div>
@@ -32,34 +29,53 @@
     <!-- Top Sticky Navigation Bar -->
     <header class="top-navbar">
       <div class="brand-section" data-tab="dashboard">
-        <div class="brand-logo">⚡</div>
-        <div class="brand-text">APEXPLAY</div>
-        <span class="brand-badge">PRO</span>
+        <div class="brand-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <span class="brand-text">ApexPlay</span>
       </div>
 
       <!-- Global Search Bar -->
       <div class="nav-search-wrap">
-        <span class="nav-search-icon">🔍</span>
-        <input type="text" id="nav-search-input" class="nav-search-input" placeholder="Search games, genres, developers, public API..." autocomplete="off">
+        <span class="nav-search-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input type="text" id="nav-search-input" class="nav-search-input" placeholder="Search games, genres, developers..." autocomplete="off">
         <div id="nav-search-dropdown" class="nav-search-dropdown"></div>
       </div>
 
-      <!-- Nav Actions & API status -->
+      <!-- Nav Actions -->
       <div class="nav-actions">
-        <div id="api-status-chip" class="api-status-chip" title="Live FreeToGame Public Games API integration status">
-          <span class="status-dot-pulse"></span> FreeToGame API Online
-        </div>
-
-        <button id="btn-toggle-sound" class="icon-btn active" title="Toggle UI Sound Effects" aria-label="Toggle Sound">
-          🔊
+        <button id="btn-open-recommendation" class="btn-signature-recommend" title="ApexPlay Signature Recommendation Feature">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+          <span>What Should I Play?</span>
         </button>
 
-        <button id="btn-reset-data" class="icon-btn" title="Reset Dashboard Data" aria-label="Reset Data">
-          🔄
+        <button id="btn-toggle-sound" class="icon-btn active" title="Toggle Sound Effects" aria-label="Toggle Sound">
+          <svg id="icon-sound-state" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
         </button>
 
-        <button id="btn-open-edit-profile" class="btn-primary btn-sm">
-          ✏️ Edit Profile
+        <button class="icon-btn" data-tab="settings" title="Settings" aria-label="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+
+        <button id="btn-open-edit-profile" class="btn-secondary btn-sm">
+          Edit Profile
         </button>
       </div>
     </header>
@@ -71,55 +87,148 @@
         <!-- Mini Profile Card in Sidebar -->
         <div class="sidebar-mini-profile">
           <div class="mini-profile-top">
-            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="mini-avatar">
+            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="mini-avatar profile-avatar-img">
             <div class="mini-meta">
               <div class="mini-tag profile-gamertag">V0RT3X_KNIGHT</div>
               <div class="mini-rank" id="profile-rank-text">Grandmaster Tier II</div>
             </div>
           </div>
-          <div class="xp-progress-track">
-            <div class="xp-progress-bar" style="width: 78%;"></div>
+          <div class="progress-track-subtle">
+            <div id="sidebar-xp-bar" class="progress-bar-subtle" style="width: 80%;"></div>
           </div>
         </div>
 
-        <!-- Navigation Menu Groups -->
+        <!-- OVERVIEW Group -->
         <div class="nav-menu-group">
-          <div class="nav-menu-label">Main Menu</div>
+          <div class="nav-menu-label">Overview</div>
           <button class="nav-tab-btn active" data-tab="dashboard">
-            <span class="tab-icon">🏠</span>
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+            </span>
             <span>Dashboard</span>
           </button>
           <button class="nav-tab-btn" data-tab="library">
-            <span class="tab-icon">🕹️</span>
-            <span>Game Library</span>
-            <span class="tab-badge" id="badge-library-count">6</span>
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path>
+                <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path>
+                <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path>
+              </svg>
+            </span>
+            <span>Library</span>
+            <span class="tab-badge" id="badge-library-count">9</span>
           </button>
           <button class="nav-tab-btn" data-tab="discover">
-            <span class="tab-icon">🌐</span>
-            <span>Discover API</span>
-            <span class="tab-badge" style="background: rgba(6,182,212,0.2); color: var(--neon-cyan);">400+</span>
-          </button>
-          <button class="nav-tab-btn" data-tab="achievements">
-            <span class="tab-icon">🏆</span>
-            <span>Achievements</span>
-            <span class="tab-badge" id="badge-ach-count">6</span>
-          </button>
-          <button class="nav-tab-btn" data-tab="analytics">
-            <span class="tab-icon">📊</span>
-            <span>Playtime Stats</span>
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+            </span>
+            <span>Discover</span>
           </button>
         </div>
 
+        <!-- ACTIVITY Group -->
         <div class="nav-menu-group">
-          <div class="nav-menu-label">Social & Hub</div>
+          <div class="nav-menu-label">Activity</div>
+          <button class="nav-tab-btn" data-tab="achievements">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+              </svg>
+            </span>
+            <span>Achievements</span>
+            <span class="tab-badge" id="badge-ach-count">6</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="activity">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </span>
+            <span>Gaming Journal</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="analytics">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="20" y2="10"></line>
+                <line x1="18" x2="18" y1="20" y2="4"></line>
+                <line x1="6" x2="6" y1="20" y2="16"></line>
+              </svg>
+            </span>
+            <span>Analytics</span>
+          </button>
           <button class="nav-tab-btn" data-tab="wishlist">
-            <span class="tab-icon">💖</span>
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+              </svg>
+            </span>
             <span>Wishlist</span>
             <span class="tab-badge" id="badge-wishlist-count">3</span>
           </button>
+        </div>
+
+        <!-- PERSONAL Group -->
+        <div class="nav-menu-group">
+          <div class="nav-menu-label">Personal</div>
+          <button class="nav-tab-btn" data-tab="shelves">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>
+              </svg>
+            </span>
+            <span>My Shelves</span>
+            <span class="tab-badge" id="badge-shelves-count">4</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="lists">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="10" x2="21" y1="6" y2="6"></line>
+                <line x1="10" x2="21" y1="12" y2="12"></line>
+                <line x1="10" x2="21" y1="18" y2="18"></line>
+                <path d="M4 6h1v4"></path>
+                <path d="M4 10h2"></path>
+                <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path>
+              </svg>
+            </span>
+            <span>My Lists</span>
+            <span class="tab-badge" id="badge-lists-count">2</span>
+          </button>
+        </div>
+
+        <!-- OTHER Group -->
+        <div class="nav-menu-group">
+          <div class="nav-menu-label">Other</div>
           <button class="nav-tab-btn" data-tab="news">
-            <span class="tab-icon">📰</span>
-            <span>Gaming News</span>
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                <path d="M18 14h-8"></path>
+                <path d="M15 18h-5"></path>
+                <path d="M10 6h8v4h-8V6Z"></path>
+              </svg>
+            </span>
+            <span>Gaming Feed</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="settings">
+            <span class="tab-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </span>
+            <span>Settings</span>
           </button>
         </div>
       </aside>
@@ -127,128 +236,62 @@
       <!-- Central Content Hub -->
       <main class="main-content">
         <!-- ==========================================
-             TAB 1: MAIN DASHBOARD & PROFILE
+             TAB 1: MAIN DASHBOARD
              ========================================== -->
         <section id="tab-dashboard" class="tab-panel active">
-          <!-- Hero Profile Card -->
-          <div class="profile-hero-card">
-            <div class="profile-banner-wrap">
-              <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80" alt="Cover Banner" class="profile-banner-img">
-              <div class="profile-banner-overlay"></div>
+          <!-- 1. Context / Greeting -->
+          <div class="dashboard-greeting-bar">
+            <div class="greeting-user-info">
+              <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="greeting-avatar profile-avatar-img">
+              <div>
+                <h1 class="greeting-title">Welcome back, <span class="profile-gamertag">V0RT3X_KNIGHT</span></h1>
+                <div class="greeting-subtitle" id="dashboard-status-text">Your personal gaming library is ready</div>
+              </div>
             </div>
-
-            <div class="profile-body">
-              <div class="profile-main-row">
-                <div class="profile-identity">
-                  <div class="avatar-container">
-                    <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Profile Avatar" class="profile-avatar-img">
-                    <div class="avatar-status-indicator" title="Status: Online"></div>
-                  </div>
-                  <div class="identity-details">
-                    <div class="profile-gamertag-row">
-                      <h1 class="profile-gamertag">V0RT3X_KNIGHT</h1>
-                      <span class="profile-rank-badge">Apex Predator</span>
-                    </div>
-                    <p class="profile-title-bio" id="profile-bio-text">
-                      Cyber Vanguard • Competitive FPS & immersive RPG enthusiast. Building the ultimate sci-fi backcatalog.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="profile-actions">
-                  <button class="btn-primary" data-tab="discover">
-                    + Explore Games
-                  </button>
-                  <button class="btn-secondary" data-tab="library">
-                    View Library
-                  </button>
-                </div>
+            <div class="greeting-quick-stats">
+              <div class="quick-stat-box">
+                <span class="quick-stat-val" id="stat-total-hours">1,721h</span>
+                <span class="quick-stat-label">Playtime</span>
               </div>
-
-              <!-- Level Progress Bar -->
-              <div class="profile-level-card">
-                <div class="level-meta-row">
-                  <div class="level-badge-wrap">
-                    <div class="level-number-pill">47</div>
-                    <div class="level-title">Elite Veteran Level</div>
-                  </div>
-                  <div class="xp-counter" id="profile-xp-counter">
-                    <span>6,850</span> / 8,500 XP (80%)
-                  </div>
-                </div>
-                <div class="xp-progress-track">
-                  <div id="profile-xp-bar" class="xp-progress-bar" style="width: 80%;"></div>
-                </div>
+              <div class="quick-stat-box">
+                <span class="quick-stat-val" id="stat-games-owned">9</span>
+                <span class="quick-stat-label">Library</span>
               </div>
-
-              <!-- Profile Prestige Badges -->
-              <div class="profile-badges-row">
-                <div class="badge-item" title="Maintained 60%+ headshot accuracy in 50 matches">
-                  <span class="badge-icon">🎯</span> Aim God
-                </div>
-                <div class="badge-item" title="100% completed 12 AAA titles">
-                  <span class="badge-icon">🏆</span> Platinum Collector
-                </div>
-                <div class="badge-item" title="Over 500 hours logged between midnight and 5 AM">
-                  <span class="badge-icon">🌙</span> Night Owl
-                </div>
-                <div class="badge-item" title="Top 5% completion speed in Elden Ring">
-                  <span class="badge-icon">⚡</span> Speedrunner
-                </div>
-              </div>
-
-              <!-- Profile Quick Statistics Grid -->
-              <div class="profile-stats-grid">
-                <div class="stat-widget-card">
-                  <div class="stat-icon-wrap purple">⏳</div>
-                  <div class="stat-widget-info">
-                    <div class="stat-value" id="stat-total-hours">1,721h</div>
-                    <div class="stat-label">Total Playtime</div>
-                  </div>
-                </div>
-                <div class="stat-widget-card">
-                  <div class="stat-icon-wrap cyan">🎮</div>
-                  <div class="stat-widget-info">
-                    <div class="stat-value" id="stat-games-owned">6</div>
-                    <div class="stat-label">Games Owned</div>
-                  </div>
-                </div>
-                <div class="stat-widget-card">
-                  <div class="stat-icon-wrap emerald">🏆</div>
-                  <div class="stat-widget-info">
-                    <div class="stat-value" id="stat-ach-unlocked">6</div>
-                    <div class="stat-label">Achievements</div>
-                  </div>
-                </div>
-                <div class="stat-widget-card">
-                  <div class="stat-icon-wrap amber">📈</div>
-                  <div class="stat-widget-info">
-                    <div class="stat-value" id="stat-completion-rate">82%</div>
-                    <div class="stat-label">Completion Rate</div>
-                  </div>
-                </div>
+              <div class="quick-stat-box">
+                <span class="quick-stat-val" id="stat-completion-rate">82%</span>
+                <span class="quick-stat-label">Completion</span>
               </div>
             </div>
           </div>
 
-          <!-- Recently Played Spotlight -->
-          <div style="margin-top: 2rem;">
+          <!-- 2. Continue Playing Section -->
+          <div class="continue-playing-container">
             <div class="section-header-wrap">
               <div class="section-title-group">
-                <h2 class="section-title">Recently Played Games</h2>
-                <span class="section-count-badge">Active Sessions</span>
+                <h2 class="section-title">Continue Playing</h2>
+                <span class="section-count-badge">Active</span>
+              </div>
+            </div>
+            <div id="continue-playing-widget"></div>
+          </div>
+
+          <!-- 3. Recently Played Spotlight -->
+          <div style="margin-top: 1.8rem;">
+            <div class="section-header-wrap">
+              <div class="section-title-group">
+                <h2 class="section-title">Recently Played</h2>
               </div>
               <button class="btn-secondary btn-sm" data-tab="library">See All in Library →</button>
             </div>
             <div id="recently-played-container" class="recently-played-grid"></div>
           </div>
 
-          <!-- Quick Preview Analytics in Dashboard -->
-          <div style="margin-top: 2rem;">
+          <!-- 4. Weekly Activity Telemetry -->
+          <div style="margin-top: 1.8rem;">
             <div class="section-header-wrap">
               <div class="section-title-group">
-                <h2 class="section-title">Weekly Gaming Activity</h2>
-                <span class="section-count-badge">Last 7 Days</span>
+                <h2 class="section-title">Your Week</h2>
+                <span class="section-count-badge">Daily Telemetry</span>
               </div>
               <button class="btn-secondary btn-sm" data-tab="analytics">Full Analytics Breakdown →</button>
             </div>
@@ -258,75 +301,167 @@
               </div>
             </div>
           </div>
+
+          <!-- 5. Achievements & Backlog Snapshot -->
+          <div style="margin-top: 1.8rem;" class="analytics-grid">
+            <div class="chart-card">
+              <div class="section-header-wrap" style="margin-bottom: 0.75rem;">
+                <div class="section-title-group">
+                  <h3 class="section-title" style="font-size: 1rem;">Recent Achievements</h3>
+                </div>
+                <button class="btn-secondary btn-sm" data-tab="achievements">View All →</button>
+              </div>
+              <div id="dashboard-recent-achievements" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="section-header-wrap" style="margin-bottom: 0.75rem;">
+                <div class="section-title-group">
+                  <h3 class="section-title" style="font-size: 1rem;">Priority Backlog</h3>
+                </div>
+                <button class="btn-secondary btn-sm" data-tab="library">Manage Backlog →</button>
+              </div>
+              <div id="dashboard-backlog-preview" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+          </div>
         </section>
 
         <!-- ==========================================
-             TAB 2: GAME LIBRARY
+             TAB 2: GAME LIBRARY (FEATURES 2 & 3)
              ========================================== -->
         <section id="tab-library" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">Personal Game Library</h2>
-              <span class="section-count-badge" id="library-total-count">6 Games</span>
+              <h2 class="section-title">My Library</h2>
+              <span class="section-count-badge" id="library-total-count">9 Games</span>
             </div>
-            <div class="section-controls">
-              <div style="display: flex; gap: 4px;">
-                <button id="btn-view-grid" class="icon-btn active" title="Grid View">⊞</button>
-                <button id="btn-view-list" class="icon-btn" title="List View">☰</button>
+            <button class="btn-primary btn-sm" data-tab="discover">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Game</span>
+            </button>
+          </div>
+
+          <!-- Top Status Counters (Clickable Interactive Filters) -->
+          <div class="library-status-nav" id="library-status-nav">
+            <button class="library-status-tab-btn active" data-status-filter="all">
+              All Games <span class="library-status-count" id="count-status-all">9</span>
+            </button>
+            <button class="library-status-tab-btn" data-status-filter="Playing">
+              Playing <span class="library-status-count" id="count-status-playing">2</span>
+            </button>
+            <button class="library-status-tab-btn" data-status-filter="Completed">
+              Completed <span class="library-status-count" id="count-status-completed">3</span>
+            </button>
+            <button class="library-status-tab-btn" data-status-filter="Backlog">
+              Backlog <span class="library-status-count" id="count-status-backlog">2</span>
+            </button>
+            <button class="library-status-tab-btn" data-status-filter="Wishlist">
+              Wishlist <span class="library-status-count" id="count-status-wishlist">3</span>
+            </button>
+            <button class="library-status-tab-btn" data-status-filter="Dropped">
+              Dropped <span class="library-status-count" id="count-status-dropped">2</span>
+            </button>
+          </div>
+
+          <!-- Practical Library Toolbar (Search, Filter, Sort, View) -->
+          <div class="library-filter-toolbar">
+            <div class="library-search-inline">
+              <span class="library-search-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              <input type="text" id="library-search-input" class="library-search-input" placeholder="Search games...">
+            </div>
+
+            <div class="library-controls-group">
+              <select id="library-genre-select" class="library-select" title="Filter by Genre">
+                <option value="all">All Genres</option>
+              </select>
+
+              <select id="library-platform-select" class="library-select" title="Filter by Platform">
+                <option value="all">All Platforms</option>
+              </select>
+
+              <select id="library-sort-select" class="library-select" title="Sort Library">
+                <option value="recent">Recently Played</option>
+                <option value="added">Recently Added</option>
+                <option value="playtime">Most Played</option>
+                <option value="completion">Highest Completion</option>
+                <option value="rating">Highest Rated</option>
+                <option value="name">Alphabetical</option>
+              </select>
+
+              <div class="view-mode-toggle">
+                <button id="btn-view-grid" class="view-mode-btn active" title="Grid View (Artwork)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </button>
+                <button id="btn-view-list" class="view-mode-btn" title="List View (Information)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- Library Filter and Sort Toolbar -->
-          <div class="library-filter-toolbar">
-            <div class="filter-tags-wrap">
-              <button class="filter-tag-chip active" data-lib-filter="all">All Games</button>
-              <button class="filter-tag-chip" data-lib-filter="Playing">Playing</button>
-              <button class="filter-tag-chip" data-lib-filter="Completed">Completed</button>
-              <button class="filter-tag-chip" data-lib-filter="Installed">Installed</button>
-              <button class="filter-tag-chip" data-lib-filter="Favorites">★ Favorites</button>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 0.8rem; color: var(--text-dim);">Sort By:</span>
-              <select id="library-sort-select" class="library-sort-select">
-                <option value="playtime">Most Played</option>
-                <option value="name">Alphabetical</option>
-                <option value="rating">Top Rated</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Library Games Grid / List Container -->
+          <!-- Catalog Container -->
           <div id="library-catalog-container" class="games-catalog-grid"></div>
         </section>
 
         <!-- ==========================================
-             TAB 3: DISCOVER PUBLIC GAMES API
+             TAB 3: DISCOVER
              ========================================== -->
         <section id="tab-discover" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">Discover Games (Live Public API)</h2>
-              <span class="section-count-badge">FreeToGame Database</span>
+              <h2 class="section-title">Discover Games</h2>
+              <span class="section-count-badge">Curated Catalog</span>
             </div>
-            <span style="font-size: 0.85rem; color: var(--neon-cyan);">⚡ Direct Public API Connection (No Key Required)</span>
+            <button id="btn-discover-random" class="btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+              <span>Random Pick</span>
+            </button>
           </div>
 
-          <!-- Genre Filter Pills for Public API -->
           <div class="library-filter-toolbar">
-            <div class="filter-tags-wrap">
-              <button class="filter-tag-chip active" data-discover-genre="all">All Categories</button>
-              <button class="filter-tag-chip" data-discover-genre="shooter">Shooter</button>
-              <button class="filter-tag-chip" data-discover-genre="mmo">MMORPG</button>
-              <button class="filter-tag-chip" data-discover-genre="battle-royale">Battle Royale</button>
-              <button class="filter-tag-chip" data-discover-genre="action-rpg">Action RPG</button>
-              <button class="filter-tag-chip" data-discover-genre="strategy">Strategy</button>
-              <button class="filter-tag-chip" data-discover-genre="racing">Racing</button>
+            <div class="choice-pills-group" style="margin-bottom: 0;">
+              <button class="choice-pill-btn selected" data-discover-curation="all">All Titles</button>
+              <button class="choice-pill-btn" data-discover-curation="trending">Trending</button>
+              <button class="choice-pill-btn" data-discover-curation="recommended">Recommended</button>
+              <button class="choice-pill-btn" data-discover-curation="popular">Popular</button>
+              <button class="choice-pill-btn" data-discover-curation="new">New Releases</button>
+            </div>
+
+            <div class="library-controls-group">
+              <select id="discover-genre-filter" class="library-select">
+                <option value="all">All Categories</option>
+                <option value="shooter">Shooter</option>
+                <option value="mmo">MMORPG</option>
+                <option value="battle-royale">Battle Royale</option>
+                <option value="action-rpg">Action RPG</option>
+                <option value="strategy">Strategy</option>
+              </select>
             </div>
           </div>
 
-          <!-- Public API Games Grid Container -->
           <div id="discover-games-container" class="games-catalog-grid"></div>
         </section>
 
@@ -336,21 +471,28 @@
         <section id="tab-achievements" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">Achievement Showcase & Tracker</h2>
-              <span class="section-count-badge">Interactive XP Rewards</span>
+              <h2 class="section-title">Achievement Center</h2>
+              <span class="section-count-badge" id="ach-summary-pill">6 / 9 Unlocked</span>
             </div>
-            <span style="font-size: 0.85rem; color: var(--neon-emerald);">⚡ Click to mark achievements and level up!</span>
           </div>
 
-          <!-- Rarity Filter Chips -->
+          <!-- Overall Progress Card -->
+          <div class="chart-card" style="margin-bottom: 1.25rem;">
+            <div class="continue-progress-meta">
+              <span style="font-weight: 600; color: var(--text-white);">Overall Platform Milestones</span>
+              <span id="ach-summary-pct" style="font-family: var(--font-mono); color: var(--color-primary);">67%</span>
+            </div>
+            <div class="progress-track-subtle" style="height: 8px;">
+              <div id="ach-overall-bar" class="progress-bar-subtle" style="width: 67%;"></div>
+            </div>
+          </div>
+
           <div class="library-filter-toolbar">
-            <div class="filter-tags-wrap">
-              <button class="filter-tag-chip active" data-ach-filter="all">All Tiers</button>
-              <button class="filter-tag-chip" data-ach-filter="unlocked">Unlocked Only</button>
-              <button class="filter-tag-chip" data-ach-filter="locked">Locked Only</button>
-              <button class="filter-tag-chip" data-ach-filter="legendary">Legendary</button>
-              <button class="filter-tag-chip" data-ach-filter="epic">Epic</button>
-              <button class="filter-tag-chip" data-ach-filter="rare">Rare</button>
+            <div class="choice-pills-group" style="margin-bottom: 0;">
+              <button class="choice-pill-btn selected" data-ach-section="all">All Achievements</button>
+              <button class="choice-pill-btn" data-ach-section="unlocked">Recently Unlocked</button>
+              <button class="choice-pill-btn" data-ach-section="rare">Rare Achievements</button>
+              <button class="choice-pill-btn" data-ach-section="locked">Incomplete</button>
             </div>
           </div>
 
@@ -358,101 +500,265 @@
         </section>
 
         <!-- ==========================================
-             TAB 5: PLAYTIME STATISTICS & ANALYTICS
+             TAB 5: GAMING JOURNAL (FEATURE 7 & 22)
+             ========================================== -->
+        <section id="tab-activity" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Gaming Journal</h2>
+              <span class="section-count-badge">Activity Log</span>
+            </div>
+            <button id="btn-add-manual-journal" class="btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <span>Add Journal Note</span>
+            </button>
+          </div>
+
+          <div id="journal-timeline-container" class="journal-layout"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 6: PLAYTIME ANALYTICS (FEATURE 11 & 28)
              ========================================== -->
         <section id="tab-analytics" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">Playtime Statistics & Deep Analytics</h2>
-              <span class="section-count-badge">Visual Telemetry</span>
+              <h2 class="section-title">Gaming Analytics</h2>
+              <span class="section-count-badge">Playtime Insights</span>
             </div>
           </div>
 
           <!-- Highlight Metric Badges -->
-          <div class="profile-stats-grid" style="margin-top: 0; margin-bottom: 1.5rem;">
-            <div class="stat-widget-card">
-              <div class="stat-icon-wrap purple">⚡</div>
-              <div class="stat-widget-info">
-                <div class="stat-value" id="metric-avg-daily">5.4h</div>
-                <div class="stat-label">Daily Average</div>
-              </div>
+          <div class="dashboard-greeting-bar" style="margin-bottom: 1.5rem; justify-content: space-around;">
+            <div class="quick-stat-box">
+              <span class="quick-stat-val" id="metric-avg-daily">5.4 hrs</span>
+              <span class="quick-stat-label">Daily Average</span>
             </div>
-            <div class="stat-widget-card">
-              <div class="stat-icon-wrap cyan">🔥</div>
-              <div class="stat-widget-info">
-                <div class="stat-value" id="metric-longest-session">8.4h</div>
-                <div class="stat-label">Longest Marathon</div>
-              </div>
+            <div class="quick-stat-box">
+              <span class="quick-stat-val" id="metric-longest-session">8.4 hrs</span>
+              <span class="quick-stat-label">Longest Marathon</span>
             </div>
-            <div class="stat-widget-card">
-              <div class="stat-icon-wrap emerald">🎯</div>
-              <div class="stat-widget-info">
-                <div class="stat-value">Top 1%</div>
-                <div class="stat-label">Global Play Rank</div>
-              </div>
+            <div class="quick-stat-box">
+              <span class="quick-stat-val" id="metric-most-played">Cyberpunk 2077</span>
+              <span class="quick-stat-label">Most Played Game</span>
+            </div>
+            <div class="quick-stat-box">
+              <span class="quick-stat-val" id="metric-active-day">Saturday</span>
+              <span class="quick-stat-label">Most Active Day</span>
             </div>
           </div>
 
           <div class="analytics-grid">
-            <!-- Genre Breakdown Donut Chart -->
             <div class="chart-card">
-              <h3 style="font-weight: 700; color: var(--text-white);">Genre Time Distribution</h3>
+              <h3 style="font-weight: 600; color: var(--text-white); margin-bottom: 6px;">Genre Distribution</h3>
               <div class="donut-canvas-wrap">
                 <canvas id="chart-genre-canvas"></canvas>
               </div>
-              <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 0.8rem;">
-                <span style="color: #8b5cf6;">● Action RPG</span>
-                <span style="color: #06b6d4;">● Tactical Shooter</span>
-                <span style="color: #10b981;">● MMO / Sci-Fi</span>
-                <span style="color: #f59e0b;">● Battle Royale</span>
-                <span style="color: #ec4899;">● Hero Shooter</span>
-              </div>
             </div>
 
-            <!-- Top Played Games Bar Visualizer -->
             <div class="chart-card">
-              <h3 style="font-weight: 700; color: var(--text-white);">Most Played Leaderboard</h3>
-              <div id="top-games-leaderboard" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;"></div>
+              <h3 style="font-weight: 600; color: var(--text-white); margin-bottom: 10px;">Playtime Leaderboard</h3>
+              <div id="top-games-leaderboard" style="display: flex; flex-direction: column; gap: 8px;"></div>
             </div>
           </div>
         </section>
 
         <!-- ==========================================
-             TAB 6: WISHLIST
+             TAB 7: MY SHELVES (FEATURE 4 & 26)
+             ========================================== -->
+        <section id="tab-shelves" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">My Shelves</h2>
+              <span class="section-count-badge" id="shelves-count-label">4 Shelves</span>
+            </div>
+            <button id="btn-create-shelf" class="btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Create Shelf</span>
+            </button>
+          </div>
+
+          <div id="shelves-cards-container" class="shelves-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 8: MY LISTS (FEATURE 9 & 25)
+             ========================================== -->
+        <section id="tab-lists" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">My Lists</h2>
+              <span class="section-count-badge" id="lists-count-label">2 Lists</span>
+            </div>
+            <button id="btn-create-list" class="btn-primary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Create List</span>
+            </button>
+          </div>
+
+          <div id="lists-cards-container" class="lists-grid"></div>
+        </section>
+
+        <!-- ==========================================
+             TAB 9: WISHLIST
              ========================================== -->
         <section id="tab-wishlist" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">My Wishlist & Anticipated Titles</h2>
-              <span class="section-count-badge">Upcoming Releases</span>
+              <h2 class="section-title">My Wishlist</h2>
+              <span class="section-count-badge">Anticipated Releases</span>
             </div>
-            <button class="btn-primary btn-sm" data-tab="discover">+ Browse More to Wishlist</button>
+            <button class="btn-primary btn-sm" data-tab="discover">Browse Catalog</button>
           </div>
 
           <div id="wishlist-container" class="wishlist-grid"></div>
         </section>
 
         <!-- ==========================================
-             TAB 7: GAMING NEWS & GIVEAWAYS
+             TAB 10: GAMING FEED & NEWS (FEATURE 32)
              ========================================== -->
         <section id="tab-news" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
-              <h2 class="section-title">Gaming News & Giveaway Alerts</h2>
-              <span class="section-count-badge">Real-Time Radar</span>
+              <h2 class="section-title">Gaming Feed</h2>
+              <span class="section-count-badge">Curated Radar</span>
             </div>
           </div>
 
           <div class="news-layout-grid">
             <div>
-              <h3 style="font-weight: 700; margin-bottom: 1rem; color: var(--text-white);">Latest Headlines</h3>
+              <h3 style="font-weight: 600; margin-bottom: 1rem; color: var(--text-white);">Industry Headlines</h3>
               <div id="news-cards-container" class="news-cards-list"></div>
             </div>
 
             <div class="giveaways-panel">
-              <h3 style="font-weight: 700; color: var(--neon-amber);">🎁 Active Free Giveaways</h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted);">Limited-time loot, keys, and starter packs curated for your profile.</p>
-              <div id="giveaways-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+              <h3 style="font-weight: 600; color: var(--color-warning);">Free Loot & Giveaways</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Curated starter packs and verified promotion keys.</p>
+              <div id="giveaways-container" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             TAB 11: SETTINGS (FEATURE 18 & 31)
+             ========================================== -->
+        <section id="tab-settings" class="tab-panel">
+          <div class="section-header-wrap">
+            <div class="section-title-group">
+              <h2 class="section-title">Settings</h2>
+              <span class="section-count-badge">Preferences</span>
+            </div>
+          </div>
+
+          <div class="settings-container">
+            <!-- Appearance Section -->
+            <div class="settings-card">
+              <h3 class="settings-section-title">Appearance</h3>
+              
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Theme Mode</div>
+                  <div class="settings-row-desc">Switch between deep dark mode and daylight theme</div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button id="btn-theme-dark" class="btn-secondary btn-sm" style="font-weight: 600;">Dark Mode</button>
+                  <button id="btn-theme-light" class="btn-secondary btn-sm">Light Mode</button>
+                </div>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Accent Color</div>
+                  <div class="settings-row-desc">Select your personal platform accent hue</div>
+                </div>
+                <div class="accent-color-picker" id="accent-color-picker">
+                  <div class="color-dot-choice selected" data-color="#4F8CFF" style="background: #4F8CFF;" title="Electric Blue"></div>
+                  <div class="color-dot-choice" data-color="#8b5cf6" style="background: #8b5cf6;" title="Violet"></div>
+                  <div class="color-dot-choice" data-color="#39C98A" style="background: #39C98A;" title="Emerald"></div>
+                  <div class="color-dot-choice" data-color="#E8B84A" style="background: #E8B84A;" title="Amber"></div>
+                  <div class="color-dot-choice" data-color="#ec4899" style="background: #ec4899;" title="Rose"></div>
+                </div>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Reduce Motion</div>
+                  <div class="settings-row-desc">Disable decorative transitions across the interface</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-reduce-motion">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="settings-card">
+              <h3 class="settings-section-title">Profile</h3>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Gamer Identity</div>
+                  <div class="settings-row-desc">Gamertag, bio, and avatar credentials</div>
+                </div>
+                <button class="btn-secondary btn-sm" onclick="document.getElementById('edit-profile-modal').classList.add('open')">
+                  Edit Profile Details
+                </button>
+              </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="settings-card">
+              <h3 class="settings-section-title">Preferences</h3>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Sound Effects</div>
+                  <div class="settings-row-desc">Synthesizer audio feedback on interactions and session triggers</div>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-sound-effects" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Default Library View</div>
+                  <div class="settings-row-desc">Choose between artwork-focused grid or data-dense list</div>
+                </div>
+                <select id="settings-default-view" class="library-select">
+                  <option value="grid">Grid (Artwork Focus)</option>
+                  <option value="list">List (Information Focus)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Data Section -->
+            <div class="settings-card">
+              <h3 class="settings-section-title">Data Management</h3>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Export Data Backup</div>
+                  <div class="settings-row-desc">Download a complete JSON snapshot of your library, shelves, lists, ratings, and journal</div>
+                </div>
+                <button id="btn-export-data" class="btn-secondary btn-sm">Export JSON</button>
+              </div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Reset Local Data</div>
+                  <div class="settings-row-desc">Clear local modifications and re-populate clean sample state</div>
+                </div>
+                <button id="btn-settings-reset" class="btn-danger btn-sm">Reset Local Data</button>
+              </div>
             </div>
           </div>
         </section>
@@ -462,34 +768,49 @@
     <!-- Mobile Bottom Navigation Dock -->
     <nav class="mobile-nav-dock">
       <button class="mobile-dock-btn active" data-tab="dashboard">
-        <span class="dock-icon">🏠</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        </svg>
         <span>Home</span>
       </button>
       <button class="mobile-dock-btn" data-tab="library">
-        <span class="dock-icon">🕹️</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path>
+        </svg>
         <span>Library</span>
       </button>
+      <button class="mobile-dock-btn" data-tab="activity">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>Journal</span>
+      </button>
       <button class="mobile-dock-btn" data-tab="discover">
-        <span class="dock-icon">🌐</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
         <span>Discover</span>
       </button>
-      <button class="mobile-dock-btn" data-tab="achievements">
-        <span class="dock-icon">🏆</span>
-        <span>Achievements</span>
-      </button>
-      <button class="mobile-dock-btn" data-tab="analytics">
-        <span class="dock-icon">📊</span>
-        <span>Stats</span>
+      <button class="mobile-dock-btn" data-tab="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
       </button>
     </nav>
   </div>
 
   <!-- ==========================================
-       MODAL 1: GAME DETAILS & SCREENSHOTS
+       MODAL 1: GAME DETAILS & HOWLONGTOBEAT (FEATURES 6, 8, 12, 19)
        ========================================== -->
   <div id="game-details-modal" class="modal-backdrop">
     <div class="game-modal-dialog">
-      <button class="modal-close-btn" title="Close">✕</button>
+      <button class="modal-close-btn" title="Close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
       <div class="game-modal-hero">
         <img id="modal-game-hero" src="" alt="Hero Backdrop">
         <div class="game-modal-hero-overlay">
@@ -502,69 +823,286 @@
       </div>
 
       <div class="game-modal-body">
+        <!-- Action Bar (Play, Wishlist, Status Dropdown) -->
         <div class="modal-action-bar">
-          <div style="display: flex; gap: 10px;">
-            <button id="modal-btn-play" class="btn-play-game" style="padding: 10px 20px;">
-              ▶ Play Now
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button id="modal-btn-play" class="btn-play-game">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>Play / Continue</span>
             </button>
             <button id="modal-btn-add-library" class="btn-primary">
               + Add to Library
             </button>
+            <button id="modal-btn-wishlist-toggle" class="btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg> Wishlist
+            </button>
           </div>
-          <span style="color: var(--neon-emerald); font-weight: 700; font-size: 0.9rem;">✓ Verified Compatible</span>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Status:</span>
+            <select id="modal-status-select" class="library-select">
+              <option value="Playing">Playing</option>
+              <option value="Completed">Completed</option>
+              <option value="Backlog">Backlog</option>
+              <option value="Wishlist">Wishlist</option>
+              <option value="Dropped">Dropped</option>
+            </select>
+          </div>
         </div>
 
+        <!-- Your Progress -->
         <div>
-          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 8px;">About the Game</h4>
-          <p id="modal-game-desc" style="color: var(--text-muted); line-height: 1.6;"></p>
+          <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Your Progress</h4>
+          <div class="detail-progress-grid">
+            <div class="detail-progress-cell">
+              <div class="detail-progress-label">Hours Played</div>
+              <div class="detail-progress-val" id="modal-progress-hours">0h</div>
+            </div>
+            <div class="detail-progress-cell">
+              <div class="detail-progress-label">Completion</div>
+              <div class="detail-progress-val" id="modal-progress-completion">0%</div>
+            </div>
+            <div class="detail-progress-cell">
+              <div class="detail-progress-label">Achievements</div>
+              <div class="detail-progress-val" id="modal-progress-ach">0 / 0</div>
+            </div>
+            <div class="detail-progress-cell">
+              <div class="detail-progress-label">Last Played</div>
+              <div class="detail-progress-val" id="modal-progress-last" style="font-size: 0.9rem;">Never</div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 12px;">Minimum System Specifications</h4>
-          <div id="modal-specs-container" class="modal-specs-grid"></div>
+        <!-- HowLongToBeat Section -->
+        <div id="modal-hltb-section" class="hltb-card">
+          <div class="hltb-title-row">
+            <span style="font-weight: 600; color: var(--text-white); font-size: 0.9rem;">HowLongToBeat Estimates</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">Community Benchmarks</span>
+          </div>
+          <div id="modal-hltb-content"></div>
         </div>
 
+        <!-- Ratings & Reviews -->
+        <div class="rating-section-row">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Your Rating</div>
+            <div class="star-rating-widget" id="modal-star-rating-widget">
+              <button class="star-btn" data-star="1" aria-label="1 star"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+              <button class="star-btn" data-star="2" aria-label="2 stars"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+              <button class="star-btn" data-star="3" aria-label="3 stars"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+              <button class="star-btn" data-star="4" aria-label="4 stars"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+              <button class="star-btn" data-star="5" aria-label="5 stars"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+              <span class="rating-display-num" id="modal-rating-val">4.5 / 5</span>
+            </div>
+          </div>
+
+          <div id="modal-community-rating-box" style="display: none; border-left: 1px solid var(--border-color); padding-left: 1.5rem;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Community Rating</div>
+            <div style="font-family: var(--font-mono); font-weight: 700; font-size: 1.1rem; color: var(--text-white);" id="modal-community-rating-val">
+              4.7 / 5
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Review -->
         <div>
-          <h4 style="font-weight: 700; color: var(--text-white); margin-bottom: 12px;">Screenshots & Media</h4>
-          <div id="modal-screenshots-gallery" class="screenshot-gallery"></div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <h4 style="font-weight: 600; color: var(--text-white);">Your Personal Review</h4>
+            <button id="btn-save-modal-review" class="btn-primary btn-sm">Save Review</button>
+          </div>
+          <textarea id="modal-review-input" class="review-input-area" rows="3" placeholder="Write your thoughts, tips, or review of this game..."></textarea>
+        </div>
+
+        <!-- Play History Sessions -->
+        <div>
+          <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Play History</h4>
+          <div id="modal-session-history-container" class="play-history-list"></div>
+        </div>
+
+        <!-- About Description -->
+        <div>
+          <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 6px;">About</h4>
+          <p id="modal-game-desc" style="color: var(--text-secondary); line-height: 1.55; font-size: 0.88rem;"></p>
+        </div>
+
+        <!-- System Specifications -->
+        <div>
+          <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">System Specifications</h4>
+          <div id="modal-specs-container" class="detail-progress-grid" style="grid-template-columns: repeat(2, 1fr);"></div>
+        </div>
+
+        <!-- Media Gallery -->
+        <div>
+          <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Screenshots</h4>
+          <div id="modal-screenshots-gallery" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;"></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ==========================================
-       MODAL 2: EDIT PROFILE
+       MODAL 2: "WHAT SHOULD I PLAY?" (FEATURE 14 & 30)
+       ========================================== -->
+  <div id="recommendation-modal" class="modal-backdrop">
+    <div class="game-modal-dialog recommend-dialog">
+      <button class="modal-close-btn" title="Close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div style="padding: 1.75rem;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+          <h3 style="font-weight: 700; font-size: 1.3rem; color: #fff;">
+            What should I play?
+          </h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+          Select your current mood and available time window. ApexPlay analyzes your library and backlog to recommend your next title.
+        </p>
+
+        <!-- Question 1: Mood -->
+        <div class="recommend-step-title">What are you in the mood for?</div>
+        <div class="choice-pills-group" id="rec-mood-group">
+          <button class="choice-pill-btn selected" data-mood="short">Something short</button>
+          <button class="choice-pill-btn" data-mood="story">Story-driven</button>
+          <button class="choice-pill-btn" data-mood="challenging">Challenging</button>
+          <button class="choice-pill-btn" data-mood="relaxing">Relaxing</button>
+          <button class="choice-pill-btn" data-mood="multiplayer">Multiplayer</button>
+          <button class="choice-pill-btn" data-mood="unplayed">Haven't played recently</button>
+        </div>
+
+        <!-- Question 2: Time Available -->
+        <div class="recommend-step-title">Available time:</div>
+        <div class="choice-pills-group" id="rec-time-group">
+          <button class="choice-pill-btn selected" data-time="1">Under 1 hour</button>
+          <button class="choice-pill-btn" data-time="2">1–2 hours</button>
+          <button class="choice-pill-btn" data-time="4">2–4 hours</button>
+          <button class="choice-pill-btn" data-time="99">No limit</button>
+        </div>
+
+        <button id="btn-generate-recommendation" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          Pick a Game
+        </button>
+
+        <!-- Result Box -->
+        <div id="recommendation-result-container" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 3: CREATE SHELF (FEATURE 4 & 26)
+       ========================================== -->
+  <div id="create-shelf-modal" class="modal-backdrop">
+    <div class="game-modal-dialog" style="max-width: 500px;">
+      <button class="modal-close-btn" title="Close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div style="padding: 1.75rem;">
+        <h3 style="font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; color: #fff;">
+          Create Custom Shelf
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Shelf Name</label>
+            <input type="text" id="input-shelf-name" class="library-search-input" placeholder="e.g. Weekend Games, Short Games..." style="padding-left: 10px;">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Optional Description</label>
+            <textarea id="input-shelf-desc" class="review-input-area" rows="2" placeholder="Brief description of this collection..."></textarea>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Add Games</label>
+            <div id="shelf-games-picker" style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; padding: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);"></div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+          <button class="btn-secondary" onclick="document.getElementById('create-shelf-modal').classList.remove('open')">Cancel</button>
+          <button id="btn-save-shelf" class="btn-primary">Create Shelf</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 4: CREATE LIST (FEATURE 9 & 25)
+       ========================================== -->
+  <div id="create-list-modal" class="modal-backdrop">
+    <div class="game-modal-dialog" style="max-width: 500px;">
+      <button class="modal-close-btn" title="Close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div style="padding: 1.75rem;">
+        <h3 style="font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; color: #fff;">
+          Create Game List
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">List Title</label>
+            <input type="text" id="input-list-title" class="library-search-input" placeholder="e.g. Best RPGs I've Played..." style="padding-left: 10px;">
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Description</label>
+            <textarea id="input-list-desc" class="review-input-area" rows="2" placeholder="Describe this list..."></textarea>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.85rem; color: var(--text-white);">Ranked List (1, 2, 3...)?</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="input-list-ranked" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Games to Include</label>
+            <div id="list-games-picker" style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; padding: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm);"></div>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+          <button class="btn-secondary" onclick="document.getElementById('create-list-modal').classList.remove('open')">Cancel</button>
+          <button id="btn-save-list" class="btn-primary">Save List</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 5: EDIT PROFILE
        ========================================== -->
   <div id="edit-profile-modal" class="modal-backdrop">
-    <div class="game-modal-dialog edit-profile-dialog">
-      <button class="modal-close-btn" title="Close">✕</button>
-      <div style="padding: 1.8rem;">
-        <h3 style="font-family: var(--font-heading); font-weight: 800; font-size: 1.5rem; margin-bottom: 1.2rem; color: #fff;">
+    <div class="game-modal-dialog" style="max-width: 480px;">
+      <button class="modal-close-btn" title="Close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div style="padding: 1.75rem;">
+        <h3 style="font-weight: 700; font-size: 1.25rem; margin-bottom: 1.2rem; color: #fff;">
           Edit Gamer Profile
         </h3>
 
-        <div class="form-group">
-          <label class="form-label">Gamertag</label>
-          <input type="text" id="input-edit-gamertag" class="form-input" value="V0RT3X_KNIGHT">
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Gamertag</label>
+          <input type="text" id="input-edit-gamertag" class="library-search-input" value="V0RT3X_KNIGHT" style="padding-left: 10px;">
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Choose Avatar</label>
-          <div class="avatar-selection-row">
-            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar 1" class="avatar-choice selected">
-            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="Avatar 2" class="avatar-choice">
-            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&auto=format&fit=crop&q=80" alt="Avatar 3" class="avatar-choice">
-            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80" alt="Avatar 4" class="avatar-choice">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Avatar 5" class="avatar-choice">
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Choose Avatar</label>
+          <div style="display: flex; gap: 8px;">
+            <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar 1" class="avatar-choice selected mini-avatar" style="cursor: pointer;">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="Avatar 2" class="avatar-choice mini-avatar" style="cursor: pointer;">
+            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&auto=format&fit=crop&q=80" alt="Avatar 3" class="avatar-choice mini-avatar" style="cursor: pointer;">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&auto=format&fit=crop&q=80" alt="Avatar 4" class="avatar-choice mini-avatar" style="cursor: pointer;">
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Gamer Bio</label>
-          <textarea id="input-edit-bio" class="form-textarea" rows="3"></textarea>
+        <div style="margin-bottom: 1.2rem;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Gamer Bio</label>
+          <textarea id="input-edit-bio" class="review-input-area" rows="3"></textarea>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
           <button class="btn-secondary" onclick="document.getElementById('edit-profile-modal').classList.remove('open')">Cancel</button>
           <button id="btn-save-profile" class="btn-primary">Save Changes</button>
         </div>
@@ -572,24 +1110,11 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 3: LEVEL UP CELEBRATION
-       ========================================== -->
-  <div id="level-up-modal" class="level-up-overlay">
-    <div class="level-up-box">
-      <div class="level-up-badge" id="level-up-badge-val">48</div>
-      <h2 class="level-up-title">LEVEL UP!</h2>
-      <p class="level-up-subtitle">Congratulations! You've advanced your Gamer Tier and unlocked new prestige perks.</p>
-      <button id="btn-close-levelup" class="btn-primary" style="padding: 10px 24px; font-size: 1rem;">
-        Claim Prestige Rewards
-      </button>
-    </div>
-  </div>
-
   <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
   <!-- JavaScript Modules -->
+  <script src="js/icons.js"></script>
   <script src="js/state.js"></script>
   <script src="js/api.js"></script>
   <script src="js/audio.js"></script>
