@@ -10,6 +10,53 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChP9Iz4MBKi2neUCnzvcx2tO5O-pY3nC0",
+      authDomain: "apex-gaming-2b03a.firebaseapp.com",
+      projectId: "apex-gaming-2b03a",
+      storageBucket: "apex-gaming-2b03a.firebasestorage.app",
+      messagingSenderId: "159201037873",
+      appId: "1:159201037873:web:cf745bee28d5eb72c7cf10",
+      measurementId: "G-6V202NMJTF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    try {
+      isSupported().then(supported => {
+        if (supported) {
+          window.firebaseAnalytics = getAnalytics(app);
+        }
+      }).catch(() => {});
+    } catch (e) {}
+
+    try {
+      const auth = getAuth(app);
+      const googleProvider = new GoogleAuthProvider();
+
+      window.firebaseApp = app;
+      window.firebaseAuth = auth;
+      window.googleAuthProvider = googleProvider;
+      window.firebaseSignInWithPopup = signInWithPopup;
+      window.firebaseSignOut = signOut;
+      window.firebaseOnAuthStateChanged = onAuthStateChanged;
+
+      onAuthStateChanged(auth, (user) => {
+        if (user && user.email) {
+          if (window.gameState && (!window.gameState.state.auth || !window.gameState.state.auth.isAuthenticated)) {
+            window.gameState.loginWithGoogle(user.email, user.displayName, user.photoURL);
+          }
+        }
+      });
+    } catch (e) {
+      console.warn('Firebase Auth initialization note:', e);
+    }
+  </script>
 </head>
 <body>
   <div id="gmail-login-gate" class="gmail-auth-gate">
@@ -25,6 +72,8 @@
       </div>
 
       <div class="gmail-auth-card">
+        <div id="gmail-auth-error" class="auth-error-msg" style="display:none; color: var(--color-warning); font-size: 0.82rem; text-align: center; padding: 8px 12px; background: rgba(232, 184, 74, 0.12); border: 1px solid var(--color-warning); border-radius: 6px;"></div>
+
         <button id="btn-google-signin" class="btn-google-login" type="button">
           <svg class="google-icon" width="20" height="20" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -62,6 +111,9 @@
           </div>
           <button type="submit" class="btn-primary btn-block" id="btn-submit-gmail">
             Continue with Gmail
+          </button>
+          <button type="button" id="btn-guest-login" class="btn-secondary btn-block" style="margin-top: 6px;">
+            Continue as Guest / Demo
           </button>
         </form>
 
@@ -1098,43 +1150,6 @@
   </div>
 
   <div id="toast-container" class="toast-container"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyChP9Iz4MBKi2neUCnzvcx2tO5O-pY3nC0",
-      authDomain: "apex-gaming-2b03a.firebaseapp.com",
-      projectId: "apex-gaming-2b03a",
-      storageBucket: "apex-gaming-2b03a.firebasestorage.app",
-      messagingSenderId: "159201037873",
-      appId: "1:159201037873:web:cf745bee28d5eb72c7cf10",
-      measurementId: "G-6V202NMJTF"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    window.firebaseApp = app;
-    window.firebaseAnalytics = analytics;
-    window.firebaseAuth = auth;
-    window.googleAuthProvider = googleProvider;
-    window.firebaseSignInWithPopup = signInWithPopup;
-    window.firebaseSignOut = signOut;
-    window.firebaseOnAuthStateChanged = onAuthStateChanged;
-
-    onAuthStateChanged(auth, (user) => {
-      if (user && user.email) {
-        if (window.gameState && (!window.gameState.state.auth || !window.gameState.state.auth.isAuthenticated)) {
-          window.gameState.loginWithGoogle(user.email, user.displayName, user.photoURL);
-        }
-      }
-    });
-  </script>
 
   <script src="js/icons.js"></script>
   <script src="js/state.js"></script>

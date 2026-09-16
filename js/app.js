@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const api = window.gamesApi;
   const sound = window.soundFx;
   const charts = window.DashboardCharts;
+  const ApexIcons = window.ApexIcons;
 
   let currentTab = 'dashboard';
   let libraryViewMode = state.state.settings?.defaultLibraryView || 'grid'; 
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.classList.toggle('active', !muted);
     btn.title = muted ? 'Audio Muted' : 'Audio Enabled';
     if (window.ApexIcons) {
-      btn.innerHTML = ApexIcons.get(muted ? 'volume-x' : 'volume-2', { size: 16, className: 'nav-icon' });
+      btn.innerHTML = window.ApexIcons.get(muted ? 'volume-x' : 'volume-2', { size: 16, className: 'nav-icon' });
     }
   }
 
@@ -2195,13 +2196,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    function processLogin(email, displayName) {
+    function processLogin(email, displayName, photoURL) {
+      const errorEl = document.getElementById('gmail-auth-error');
       const cleanEmail = (email || '').trim().toLowerCase();
-      if (!cleanEmail || !cleanEmail.includes('@') || (!cleanEmail.endsWith('@gmail.com') && !cleanEmail.endsWith('.com'))) {
+      if (!cleanEmail || !cleanEmail.includes('@')) {
+        if (errorEl) {
+          errorEl.textContent = 'Please enter a valid Gmail address (@gmail.com)';
+          errorEl.style.display = 'block';
+        }
         showToast('Please enter a valid Gmail address (@gmail.com)', 'warn');
         sound.click();
         return false;
       }
+      if (errorEl) errorEl.style.display = 'none';
       const user = state.loginWithGoogle(cleanEmail, displayName, photoURL);
       sound.achievement();
       showToast(`Welcome to ApexPlay, ${user.displayName}!`, 'success');
@@ -2213,6 +2220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGoogle) {
       btnGoogle.onclick = () => {
         sound.click();
+        const errorEl = document.getElementById('gmail-auth-error');
         if (window.firebaseSignInWithPopup && window.firebaseAuth && window.googleAuthProvider) {
           window.firebaseSignInWithPopup(window.firebaseAuth, window.googleAuthProvider)
             .then((result) => {
@@ -2220,18 +2228,26 @@ document.addEventListener('DOMContentLoaded', () => {
               processLogin(u.email, u.displayName, u.photoURL);
             })
             .catch((err) => {
-              console.warn('Firebase Google sign-in fallback:', err);
-              const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
-              const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
-              if (entered) {
-                processLogin(entered, entered.split('@')[0]);
+              console.warn('Firebase Google sign-in note:', err);
+              if (inputEmail && inputEmail.value && inputEmail.value.trim()) {
+                processLogin(inputEmail.value.trim(), inputName ? inputName.value.trim() : '');
+              } else {
+                if (errorEl) {
+                  errorEl.textContent = 'Enter your Gmail address below or continue as guest:';
+                  errorEl.style.display = 'block';
+                }
+                if (inputEmail) inputEmail.focus();
               }
             });
         } else {
-          const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
-          const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
-          if (entered) {
-            processLogin(entered, entered.split('@')[0]);
+          if (inputEmail && inputEmail.value && inputEmail.value.trim()) {
+            processLogin(inputEmail.value.trim(), inputName ? inputName.value.trim() : '');
+          } else {
+            if (errorEl) {
+              errorEl.textContent = 'Enter your Gmail address below or continue as guest:';
+              errorEl.style.display = 'block';
+            }
+            if (inputEmail) inputEmail.focus();
           }
         }
       };
@@ -2243,6 +2259,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = inputEmail ? inputEmail.value : '';
         const name = inputName ? inputName.value : '';
         processLogin(email, name);
+      };
+    }
+
+    const btnGuest = document.getElementById('btn-guest-login');
+    if (btnGuest) {
+      btnGuest.onclick = () => {
+        sound.click();
+        processLogin('gamer@gmail.com', 'Apex Player');
       };
     }
 
