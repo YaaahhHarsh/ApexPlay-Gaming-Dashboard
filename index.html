@@ -1099,6 +1099,43 @@
 
   <div id="toast-container" class="toast-container"></div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChP9Iz4MBKi2neUCnzvcx2tO5O-pY3nC0",
+      authDomain: "apex-gaming-2b03a.firebaseapp.com",
+      projectId: "apex-gaming-2b03a",
+      storageBucket: "apex-gaming-2b03a.firebasestorage.app",
+      messagingSenderId: "159201037873",
+      appId: "1:159201037873:web:cf745bee28d5eb72c7cf10",
+      measurementId: "G-6V202NMJTF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    window.firebaseApp = app;
+    window.firebaseAnalytics = analytics;
+    window.firebaseAuth = auth;
+    window.googleAuthProvider = googleProvider;
+    window.firebaseSignInWithPopup = signInWithPopup;
+    window.firebaseSignOut = signOut;
+    window.firebaseOnAuthStateChanged = onAuthStateChanged;
+
+    onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        if (window.gameState && (!window.gameState.state.auth || !window.gameState.state.auth.isAuthenticated)) {
+          window.gameState.loginWithGoogle(user.email, user.displayName, user.photoURL);
+        }
+      }
+    });
+  </script>
+
   <script src="js/icons.js"></script>
   <script src="js/state.js"></script>
   <script src="js/api.js"></script>

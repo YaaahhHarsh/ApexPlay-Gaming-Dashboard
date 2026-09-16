@@ -2202,7 +2202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.click();
         return false;
       }
-      const user = state.loginWithGoogle(cleanEmail, displayName);
+      const user = state.loginWithGoogle(cleanEmail, displayName, photoURL);
       sound.achievement();
       showToast(`Welcome to ApexPlay, ${user.displayName}!`, 'success');
       updateGateVisibility();
@@ -2213,10 +2213,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnGoogle) {
       btnGoogle.onclick = () => {
         sound.click();
-        const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
-        const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
-        if (entered) {
-          processLogin(entered, entered.split('@')[0]);
+        if (window.firebaseSignInWithPopup && window.firebaseAuth && window.googleAuthProvider) {
+          window.firebaseSignInWithPopup(window.firebaseAuth, window.googleAuthProvider)
+            .then((result) => {
+              const u = result.user;
+              processLogin(u.email, u.displayName, u.photoURL);
+            })
+            .catch((err) => {
+              console.warn('Firebase Google sign-in fallback:', err);
+              const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
+              const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
+              if (entered) {
+                processLogin(entered, entered.split('@')[0]);
+              }
+            });
+        } else {
+          const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
+          const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
+          if (entered) {
+            processLogin(entered, entered.split('@')[0]);
+          }
         }
       };
     }
@@ -2233,6 +2249,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnSignout) {
       btnSignout.onclick = () => {
         sound.click();
+        if (window.firebaseSignOut && window.firebaseAuth) {
+          window.firebaseSignOut(window.firebaseAuth).catch(() => {});
+        }
         state.logout();
         showToast('Signed out of Gmail session', 'info');
         updateGateVisibility();
