@@ -101,6 +101,16 @@
   background: var(--color-primary-hover);
 }
 
+.btn-play-game:disabled,
+.btn-play-game.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--bg-surface-2);
+  color: var(--text-muted);
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
+
 .btn-sm {
   padding: 0.35rem 0.75rem;
   font-size: 0.78rem;

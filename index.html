@@ -823,20 +823,27 @@
       </div>
 
       <div class="game-modal-body">
-        <!-- Action Bar (Play, Wishlist, Status Dropdown) -->
+        <!-- Action Bar (Play Now, Track Session, Add Library, Wishlist, Status Dropdown) -->
         <div class="modal-action-bar">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <button id="modal-btn-play" class="btn-play-game">
+            <button id="modal-btn-play" class="btn-play-game" title="Open official game page in new tab">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
-              <span>Play / Continue</span>
+              <span>Play Now</span>
+            </button>
+            <button id="modal-btn-track-session" class="btn-secondary btn-sm" title="Start in-app play duration tracker">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Track Session</span>
             </button>
             <button id="modal-btn-add-library" class="btn-primary">
               + Add to Library
             </button>
             <button id="modal-btn-wishlist-toggle" class="btn-secondary btn-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg> Wishlist
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg> <span>Wishlist</span>
             </button>
           </div>
 

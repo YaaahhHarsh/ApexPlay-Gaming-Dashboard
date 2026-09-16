@@ -117,6 +117,7 @@ const DEFAULT_STATE = {
   library: [
     {
       id: 'g-cyberpunk',
+      game_url: 'https://www.cyberpunk.net',
       apiId: null,
       title: 'Cyberpunk 2077: Phantom Liberty',
       genre: 'RPG / Action',
@@ -154,6 +155,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-eldenring',
+      game_url: 'https://www.bandainamcoent.com/games/elden-ring',
       apiId: null,
       title: 'Elden Ring: Shadow of the Erdtree',
       genre: 'Action RPG / Soulslike',
@@ -190,6 +192,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-valorant',
+      game_url: 'https://playvalorant.com',
       apiId: null,
       title: 'Valorant',
       genre: 'Tactical Shooter',
@@ -221,6 +224,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-destiny2',
+      game_url: 'https://www.freetogame.com/open/destiny-2',
       apiId: 475,
       title: 'Destiny 2: The Final Shape',
       genre: 'MMO / Sci-Fi Shooter',
@@ -256,6 +260,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-hades2',
+      game_url: 'https://www.supergiantgames.com/games/hades-ii',
       apiId: null,
       title: 'Hades II',
       genre: 'Action / Roguelike',
@@ -291,6 +296,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-witcher3',
+      game_url: 'https://www.thewitcher.com',
       apiId: null,
       title: 'The Witcher 3: Wild Hunt',
       genre: 'RPG / Open World',
@@ -326,6 +332,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-baldursgate',
+      game_url: 'https://baldursgate3.game',
       apiId: null,
       title: "Baldur's Gate 3",
       genre: 'RPG / Turn-Based',
@@ -361,6 +368,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-overwatch',
+      game_url: 'https://www.freetogame.com/open/overwatch-2',
       apiId: 540,
       title: 'Overwatch 2',
       genre: 'Shooter / Hero',
@@ -393,6 +401,7 @@ const DEFAULT_STATE = {
     },
     {
       id: 'g-apex',
+      game_url: 'https://www.freetogame.com/open/apex-legends',
       apiId: 11,
       title: 'Apex Legends',
       genre: 'Battle Royale',
@@ -696,6 +705,21 @@ class GameState {
         if (Array.isArray(parsed.library)) {
           parsed.library.forEach(g => {
             if (g.status === 'Installed') g.status = 'Playing';
+            const URL_MAP = {
+              'g-cyberpunk': 'https://www.cyberpunk.net',
+              'g-eldenring': 'https://www.bandainamcoent.com/games/elden-ring',
+              'g-valorant': 'https://playvalorant.com',
+              'g-destiny2': 'https://www.freetogame.com/open/destiny-2',
+              'g-hades2': 'https://www.supergiantgames.com/games/hades-ii',
+              'g-witcher3': 'https://www.thewitcher.com',
+              'g-baldursgate': 'https://baldursgate3.game',
+              'g-overwatch': 'https://www.freetogame.com/open/overwatch-2',
+              'g-apex': 'https://www.freetogame.com/open/apex-legends'
+            };
+            if (!g.game_url) {
+              if (URL_MAP[g.id]) g.game_url = URL_MAP[g.id];
+              else if (g.apiId) g.game_url = 'https://www.freetogame.com/open/' + g.apiId;
+            }
             if (typeof g.userRating === 'undefined') {
               g.userRating = g.rating ? Math.min(5, parseFloat((g.rating / 2).toFixed(1))) : 4.0;
             }
@@ -772,6 +796,7 @@ class GameState {
       id: game.id || `g-api-${game.apiId || Date.now()}`,
       apiId: game.apiId || null,
       title: game.title,
+      game_url: game.game_url || game.gameUrl || (game.apiId ? `https://www.freetogame.com/open/${game.apiId}` : null),
       genre: game.genre || 'Action',
       platform: game.platform || 'PC',
       banner: game.banner || game.thumbnail || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800',
@@ -1017,6 +1042,7 @@ class GameState {
     this.state.wishlist.push({
       id: `w-${Date.now()}`,
       title: item.title,
+      game_url: item.game_url || item.gameUrl || (item.apiId ? `https://www.freetogame.com/open/${item.apiId}` : null),
       genre: item.genre || 'Action',
       price: item.price || '$59.99',
       discount: item.discount || 'New Release',

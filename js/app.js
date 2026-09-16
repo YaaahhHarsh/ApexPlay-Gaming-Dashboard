@@ -553,11 +553,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const found = publicGamesList.find(g => g.id === Number(gameOrId));
       const fullDetails = await api.fetchGameDetails(gameOrId);
       game = fullDetails || found;
+      if (game && !game.game_url && found && found.game_url) {
+        game.game_url = found.game_url;
+      }
     } else {
       game = state.state.library.find(g => g.id === gameOrId);
     }
 
     if (!game) return;
+
+    // Ensure game has game_url if obtainable
+    if (!game.game_url) {
+      if (game.gameUrl) game.game_url = game.gameUrl;
+      else if (game.apiId) game.game_url = `https://www.freetogame.com/open/${game.apiId}`;
+      else if (typeof game.id === 'number') game.game_url = `https://www.freetogame.com/open/${game.id}`;
+    }
     currentModalGame = game;
 
     // Header & Meta
@@ -611,7 +621,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const inLibrary = state.state.library.some(g => g.id === game.id || (game.id && g.apiId === game.id));
     const addLibBtn = document.getElementById('modal-btn-add-library');
     const playBtn = document.getElementById('modal-btn-play');
+    const trackBtn = document.getElementById('modal-btn-track-session');
     const wishBtn = document.getElementById('modal-btn-wishlist-toggle');
+
+    const hasPlayUrl = Boolean(game.game_url && (game.game_url.startsWith('http://') || game.game_url.startsWith('https://')));
 
     if (addLibBtn) {
       addLibBtn.style.display = inLibrary ? 'none' : 'inline-flex';
@@ -619,7 +632,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.addToLibrary({
           title: game.title,
           genre: game.genre,
-          apiId: game.id || null,
+          apiId: game.id || game.apiId || null,
+          game_url: game.game_url || null,
           banner: game.thumbnail || game.banner,
           description: game.short_description || game.description,
           platform: game.platform || 'PC'
@@ -633,8 +647,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (playBtn) {
-      playBtn.style.display = inLibrary ? 'inline-flex' : 'none';
-      playBtn.onclick = () => {
+      playBtn.style.display = 'inline-flex';
+      if (hasPlayUrl) {
+        playBtn.disabled = false;
+        playBtn.classList.remove('disabled');
+        playBtn.title = `Open official play page for ${game.title} in a new tab`;
+        playBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Play Now</span>
+        `;
+        playBtn.onclick = () => {
+          handlePlayNow(game);
+        };
+      } else {
+        playBtn.disabled = true;
+        playBtn.classList.add('disabled');
+        playBtn.title = 'Play link unavailable for this title';
+        playBtn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+          </svg>
+          <span>Play Link Unavailable</span>
+        `;
+        playBtn.onclick = () => {
+          showToast(`Play link unavailable for "${game.title}"`, 'warning');
+        };
+      }
+    }
+
+    if (trackBtn) {
+      trackBtn.style.display = inLibrary ? 'inline-flex' : 'none';
+      trackBtn.onclick = () => {
         closeModal();
         handleLaunchGame(game.id);
       };
@@ -1357,6 +1403,9 @@ document.addEventListener('DOMContentLoaded', () => {
               ` : `
                 <button class="btn-primary btn-sm" style="flex: 1;" data-add-library-api="${game.id}">+ Add</button>
               `}
+              <button class="btn-play-game btn-sm" data-discover-play-id="${game.id}" title="Play Now">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align: middle; margin-right: 2px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Play
+              </button>
               <button class="btn-secondary btn-sm" data-public-details-id="${game.id}">Details</button>
               <button class="fav-btn ${inWishlist ? 'active' : ''}" data-wishlist-toggle="${game.id}" title="Wishlist" aria-label="Wishlist"><svg width="13" height="13" viewBox="0 0 24 24" fill="${inWishlist ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
@@ -1443,10 +1492,65 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     15. ACTIVE SESSION SIMULATION
+     15. GAME PLAY & ACTIVE SESSION TRACKING
      ========================================================================== */
-  function handleLaunchGame(gameId) {
+  function handlePlayNow(gameOrUrl, title) {
+    let url = null;
+    let gameTitle = title || 'Game';
+
+    if (typeof gameOrUrl === 'string') {
+      url = gameOrUrl;
+    } else if (gameOrUrl && typeof gameOrUrl === 'object') {
+      url = gameOrUrl.game_url || gameOrUrl.gameUrl;
+      gameTitle = gameOrUrl.title || title || 'Game';
+
+      // Fallback if missing game_url but has apiId or numeric id
+      if (!url && gameOrUrl.apiId) {
+        url = `https://www.freetogame.com/open/${gameOrUrl.apiId}`;
+      } else if (!url && typeof gameOrUrl.id === 'number') {
+        url = `https://www.freetogame.com/open/${gameOrUrl.id}`;
+      }
+    }
+
+    // Validate URL protocol and presence
+    if (!url || typeof url !== 'string' || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+      sound.click();
+      showToast(`Play link unavailable for "${gameTitle}"`, 'warning');
+      return false;
+    }
+
+    // Audio & User Feedback
     sound.launch();
+    showToast(`Opening ${gameTitle}...`, 'info');
+
+    // Safe window.open with fallback for popup blockers
+    try {
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      return true;
+    } catch (err) {
+      console.error('Failed to open play URL:', err);
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return true;
+    }
+  }
+
+  function handleLaunchGame(gameId, playSound = true) {
+    if (playSound) sound.launch();
     const session = state.startSession(gameId);
     if (!session) return;
 
@@ -1652,11 +1756,30 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Launch Game
+    // Launch / Play Game
     const launchBtn = e.target.closest('[data-launch-id]');
     if (launchBtn) {
       e.preventDefault();
-      handleLaunchGame(launchBtn.dataset.launchId);
+      const gameId = launchBtn.dataset.launchId;
+      const game = state.state.library.find(g => g.id === gameId);
+      if (game) {
+        handlePlayNow(game);
+      }
+      handleLaunchGame(gameId, false);
+      return;
+    }
+
+    // Direct Play from Discover Cards
+    const discoverPlayBtn = e.target.closest('[data-discover-play-id]');
+    if (discoverPlayBtn) {
+      e.preventDefault();
+      const pubId = Number(discoverPlayBtn.dataset.discoverPlayId);
+      const pubGame = publicGamesList.find(g => g.id === pubId);
+      if (pubGame) {
+        handlePlayNow(pubGame);
+      } else {
+        handlePlayNow(null, 'Game');
+      }
       return;
     }
 
@@ -1686,6 +1809,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.addToLibrary({
           title: publicGame.title,
           apiId: publicGame.id,
+          game_url: publicGame.game_url,
           genre: publicGame.genre,
           banner: publicGame.thumbnail,
           description: publicGame.short_description,
@@ -1716,7 +1840,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (moveToLibBtn) {
       e.preventDefault();
       const title = moveToLibBtn.dataset.moveToLib;
-      state.addToLibrary({ title }, 'Backlog');
+      const wishItem = state.state.wishlist.find(w => w.title.toLowerCase() === title.toLowerCase());
+      state.addToLibrary({
+        title,
+        genre: wishItem?.genre,
+        banner: wishItem?.image,
+        platform: wishItem?.platform,
+        game_url: wishItem?.game_url
+      }, 'Backlog');
       sound.achievement();
       showToast(`Moved ${title} to Library Backlog!`, 'success');
       renderProfile();
