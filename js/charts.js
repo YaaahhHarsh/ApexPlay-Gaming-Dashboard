@@ -1,7 +1,4 @@
-/**
- * APEXPLAY ANALYTICS & CANVAS CHARTS
- * Clean, high-DPI Canvas charts with restrained, professional styling.
- */
+
 
 class DashboardCharts {
   static setupCanvas(canvas) {
@@ -30,7 +27,6 @@ class DashboardCharts {
     const maxHours = Math.max(...data.map(d => d.hours), 10);
     const colWidth = chartW / data.length;
 
-    // Background Gridlines
     ctx.strokeStyle = 'rgba(42, 50, 61, 0.6)';
     ctx.lineWidth = 1;
     const gridLines = 4;
@@ -48,7 +44,6 @@ class DashboardCharts {
       ctx.fillText(`${val}h`, padding.left - 8, y + 3);
     }
 
-    // Clean Solid Accent Bars (No neon glow)
     data.forEach((item, idx) => {
       const x = padding.left + idx * colWidth + colWidth * 0.22;
       const barW = colWidth * 0.56;
@@ -61,13 +56,11 @@ class DashboardCharts {
       ctx.roundRect(x, y, barW, barH, [radius, radius, 0, 0]);
       ctx.fill();
 
-      // Top value label
       ctx.fillStyle = '#F5F7FA';
       ctx.font = '600 11px "Inter", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(`${item.hours}h`, x + barW / 2, y - 6);
 
-      // Bottom day label
       ctx.fillStyle = '#9AA4B2';
       ctx.font = '500 11px "Inter", sans-serif';
       ctx.fillText(item.day, x + barW / 2, height - 8);
@@ -109,7 +102,6 @@ class DashboardCharts {
       startAngle = endAngle;
     });
 
-    // Center summary text
     ctx.fillStyle = '#F5F7FA';
     ctx.font = '700 17px "Inter", sans-serif';
     ctx.textAlign = 'center';

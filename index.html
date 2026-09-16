@@ -6,15 +6,74 @@
   <title>ApexPlay | Personal Gaming Hub</title>
   <meta name="description" content="ApexPlay is a personal gaming platform for library management, gaming journal logging, playtime analytics, achievement tracking, and discovery.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%200%2024%2024%22 fill=%22%234F8CFF%22><polygon points=%225%203%2019%2012%205%2021%205%203%22/></svg>">
-  
-  <!-- CSS Stylesheets -->
+
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
+  <div id="gmail-login-gate" class="gmail-auth-gate">
+    <div class="gmail-auth-container">
+      <div class="gmail-auth-hero">
+        <div class="brand-logo-large">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <h1 class="gmail-auth-title">Welcome to ApexPlay</h1>
+        <p class="gmail-auth-subtitle">Sign in with your Google / Gmail account to access your personal gaming library, track play sessions, and manage your backlog.</p>
+      </div>
+
+      <div class="gmail-auth-card">
+        <button id="btn-google-signin" class="btn-google-login" type="button">
+          <svg class="google-icon" width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>or sign in with your Gmail</span>
+        </div>
+
+        <form id="form-gmail-login" class="gmail-auth-form">
+          <div class="auth-input-group">
+            <label for="gmail-input-email">Gmail Address</label>
+            <div class="input-with-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <input type="email" id="gmail-input-email" placeholder="gamer@gmail.com" required autocomplete="email">
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <label for="gmail-input-name">Gamer / Display Name</label>
+            <div class="input-with-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input type="text" id="gmail-input-name" placeholder="ApexGamer (optional)">
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-block" id="btn-submit-gmail">
+            Continue with Gmail
+          </button>
+        </form>
+
+        <div class="gmail-auth-footer">
+          <span>Verified Google / Gmail authentication only. Your session is saved securely.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-wrapper">
-    <!-- Active In-Game Session Alert Bar -->
+    
     <div id="active-session-bar" class="active-session-banner">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span class="status-dot-pulse"></span>
@@ -26,7 +85,6 @@
       </button>
     </div>
 
-    <!-- Top Sticky Navigation Bar -->
     <header class="top-navbar">
       <div class="brand-section" data-tab="dashboard">
         <div class="brand-logo">
@@ -37,7 +95,6 @@
         <span class="brand-text">ApexPlay</span>
       </div>
 
-      <!-- Global Search Bar -->
       <div class="nav-search-wrap">
         <span class="nav-search-icon">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,7 +106,6 @@
         <div id="nav-search-dropdown" class="nav-search-dropdown"></div>
       </div>
 
-      <!-- Nav Actions -->
       <div class="nav-actions">
         <button id="btn-open-recommendation" class="btn-signature-recommend" title="ApexPlay Signature Recommendation Feature">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,20 +133,20 @@
         <button id="btn-open-edit-profile" class="btn-secondary btn-sm">
           Edit Profile
         </button>
+        <button id="btn-user-signout" class="btn-secondary btn-sm" title="Sign out of Gmail">
+          Sign Out
+        </button>
       </div>
     </header>
 
-    <!-- Main Layout Container -->
     <div class="dashboard-layout">
-      <!-- Left Navigation Sidebar -->
       <aside class="nav-sidebar">
-        <!-- Mini Profile Card in Sidebar -->
         <div class="sidebar-mini-profile">
           <div class="mini-profile-top">
             <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="mini-avatar profile-avatar-img">
             <div class="mini-meta">
               <div class="mini-tag profile-gamertag">V0RT3X_KNIGHT</div>
-              <div class="mini-rank" id="profile-rank-text">Grandmaster Tier II</div>
+              <div class="mini-rank" id="profile-email-text" style="font-size: 0.72rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;">player@gmail.com</div>
             </div>
           </div>
           <div class="progress-track-subtle">
@@ -98,7 +154,6 @@
           </div>
         </div>
 
-        <!-- OVERVIEW Group -->
         <div class="nav-menu-group">
           <div class="nav-menu-label">Overview</div>
           <button class="nav-tab-btn active" data-tab="dashboard">
@@ -132,7 +187,6 @@
           </button>
         </div>
 
-        <!-- ACTIVITY Group -->
         <div class="nav-menu-group">
           <div class="nav-menu-label">Activity</div>
           <button class="nav-tab-btn" data-tab="achievements">
@@ -179,7 +233,6 @@
           </button>
         </div>
 
-        <!-- PERSONAL Group -->
         <div class="nav-menu-group">
           <div class="nav-menu-label">Personal</div>
           <button class="nav-tab-btn" data-tab="shelves">
@@ -207,7 +260,6 @@
           </button>
         </div>
 
-        <!-- OTHER Group -->
         <div class="nav-menu-group">
           <div class="nav-menu-label">Other</div>
           <button class="nav-tab-btn" data-tab="news">
@@ -233,13 +285,10 @@
         </div>
       </aside>
 
-      <!-- Central Content Hub -->
       <main class="main-content">
-        <!-- ==========================================
-             TAB 1: MAIN DASHBOARD
-             ========================================== -->
+        
         <section id="tab-dashboard" class="tab-panel active">
-          <!-- 1. Context / Greeting -->
+          
           <div class="dashboard-greeting-bar">
             <div class="greeting-user-info">
               <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80" alt="Avatar" class="greeting-avatar profile-avatar-img">
@@ -264,7 +313,6 @@
             </div>
           </div>
 
-          <!-- 2. Continue Playing Section -->
           <div class="continue-playing-container">
             <div class="section-header-wrap">
               <div class="section-title-group">
@@ -275,7 +323,6 @@
             <div id="continue-playing-widget"></div>
           </div>
 
-          <!-- 3. Recently Played Spotlight -->
           <div style="margin-top: 1.8rem;">
             <div class="section-header-wrap">
               <div class="section-title-group">
@@ -286,7 +333,6 @@
             <div id="recently-played-container" class="recently-played-grid"></div>
           </div>
 
-          <!-- 4. Weekly Activity Telemetry -->
           <div style="margin-top: 1.8rem;">
             <div class="section-header-wrap">
               <div class="section-title-group">
@@ -302,7 +348,6 @@
             </div>
           </div>
 
-          <!-- 5. Achievements & Backlog Snapshot -->
           <div style="margin-top: 1.8rem;" class="analytics-grid">
             <div class="chart-card">
               <div class="section-header-wrap" style="margin-bottom: 0.75rem;">
@@ -326,9 +371,6 @@
           </div>
         </section>
 
-        <!-- ==========================================
-             TAB 2: GAME LIBRARY (FEATURES 2 & 3)
-             ========================================== -->
         <section id="tab-library" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -344,7 +386,6 @@
             </button>
           </div>
 
-          <!-- Top Status Counters (Clickable Interactive Filters) -->
           <div class="library-status-nav" id="library-status-nav">
             <button class="library-status-tab-btn active" data-status-filter="all">
               All Games <span class="library-status-count" id="count-status-all">9</span>
@@ -366,7 +407,6 @@
             </button>
           </div>
 
-          <!-- Practical Library Toolbar (Search, Filter, Sort, View) -->
           <div class="library-filter-toolbar">
             <div class="library-search-inline">
               <span class="library-search-icon">
@@ -419,13 +459,9 @@
             </div>
           </div>
 
-          <!-- Catalog Container -->
           <div id="library-catalog-container" class="games-catalog-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 3: DISCOVER
-             ========================================== -->
         <section id="tab-discover" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -465,9 +501,6 @@
           <div id="discover-games-container" class="games-catalog-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 4: ACHIEVEMENT TRACKER
-             ========================================== -->
         <section id="tab-achievements" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -476,7 +509,6 @@
             </div>
           </div>
 
-          <!-- Overall Progress Card -->
           <div class="chart-card" style="margin-bottom: 1.25rem;">
             <div class="continue-progress-meta">
               <span style="font-weight: 600; color: var(--text-white);">Overall Platform Milestones</span>
@@ -499,9 +531,6 @@
           <div id="achievements-list-container" class="achievements-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 5: GAMING JOURNAL (FEATURE 7 & 22)
-             ========================================== -->
         <section id="tab-activity" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -520,9 +549,6 @@
           <div id="journal-timeline-container" class="journal-layout"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 6: PLAYTIME ANALYTICS (FEATURE 11 & 28)
-             ========================================== -->
         <section id="tab-analytics" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -531,7 +557,6 @@
             </div>
           </div>
 
-          <!-- Highlight Metric Badges -->
           <div class="dashboard-greeting-bar" style="margin-bottom: 1.5rem; justify-content: space-around;">
             <div class="quick-stat-box">
               <span class="quick-stat-val" id="metric-avg-daily">5.4 hrs</span>
@@ -566,9 +591,6 @@
           </div>
         </section>
 
-        <!-- ==========================================
-             TAB 7: MY SHELVES (FEATURE 4 & 26)
-             ========================================== -->
         <section id="tab-shelves" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -587,9 +609,6 @@
           <div id="shelves-cards-container" class="shelves-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 8: MY LISTS (FEATURE 9 & 25)
-             ========================================== -->
         <section id="tab-lists" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -608,9 +627,6 @@
           <div id="lists-cards-container" class="lists-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 9: WISHLIST
-             ========================================== -->
         <section id="tab-wishlist" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -623,9 +639,6 @@
           <div id="wishlist-container" class="wishlist-grid"></div>
         </section>
 
-        <!-- ==========================================
-             TAB 10: GAMING FEED & NEWS (FEATURE 32)
-             ========================================== -->
         <section id="tab-news" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -648,9 +661,6 @@
           </div>
         </section>
 
-        <!-- ==========================================
-             TAB 11: SETTINGS (FEATURE 18 & 31)
-             ========================================== -->
         <section id="tab-settings" class="tab-panel">
           <div class="section-header-wrap">
             <div class="section-title-group">
@@ -660,7 +670,7 @@
           </div>
 
           <div class="settings-container">
-            <!-- Appearance Section -->
+            
             <div class="settings-card">
               <h3 class="settings-section-title">Appearance</h3>
               
@@ -701,7 +711,6 @@
               </div>
             </div>
 
-            <!-- Profile Section -->
             <div class="settings-card">
               <h3 class="settings-section-title">Profile</h3>
               <div class="settings-row">
@@ -715,7 +724,6 @@
               </div>
             </div>
 
-            <!-- Preferences Section -->
             <div class="settings-card">
               <h3 class="settings-section-title">Preferences</h3>
               <div class="settings-row">
@@ -741,7 +749,6 @@
               </div>
             </div>
 
-            <!-- Data Section -->
             <div class="settings-card">
               <h3 class="settings-section-title">Data Management</h3>
               <div class="settings-row">
@@ -765,7 +772,6 @@
       </main>
     </div>
 
-    <!-- Mobile Bottom Navigation Dock -->
     <nav class="mobile-nav-dock">
       <button class="mobile-dock-btn active" data-tab="dashboard">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -803,9 +809,6 @@
     </nav>
   </div>
 
-  <!-- ==========================================
-       MODAL 1: GAME DETAILS & HOWLONGTOBEAT (FEATURES 6, 8, 12, 19)
-       ========================================== -->
   <div id="game-details-modal" class="modal-backdrop">
     <div class="game-modal-dialog">
       <button class="modal-close-btn" title="Close" aria-label="Close">
@@ -823,7 +826,7 @@
       </div>
 
       <div class="game-modal-body">
-        <!-- Action Bar (Play Now, Track Session, Add Library, Wishlist, Status Dropdown) -->
+        
         <div class="modal-action-bar">
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <button id="modal-btn-play" class="btn-play-game" title="Open official game page in new tab">
@@ -859,7 +862,6 @@
           </div>
         </div>
 
-        <!-- Your Progress -->
         <div>
           <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Your Progress</h4>
           <div class="detail-progress-grid">
@@ -882,7 +884,6 @@
           </div>
         </div>
 
-        <!-- HowLongToBeat Section -->
         <div id="modal-hltb-section" class="hltb-card">
           <div class="hltb-title-row">
             <span style="font-weight: 600; color: var(--text-white); font-size: 0.9rem;">HowLongToBeat Estimates</span>
@@ -891,7 +892,6 @@
           <div id="modal-hltb-content"></div>
         </div>
 
-        <!-- Ratings & Reviews -->
         <div class="rating-section-row">
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Your Rating</div>
@@ -913,7 +913,6 @@
           </div>
         </div>
 
-        <!-- Personal Review -->
         <div>
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
             <h4 style="font-weight: 600; color: var(--text-white);">Your Personal Review</h4>
@@ -922,25 +921,21 @@
           <textarea id="modal-review-input" class="review-input-area" rows="3" placeholder="Write your thoughts, tips, or review of this game..."></textarea>
         </div>
 
-        <!-- Play History Sessions -->
         <div>
           <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Play History</h4>
           <div id="modal-session-history-container" class="play-history-list"></div>
         </div>
 
-        <!-- About Description -->
         <div>
           <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 6px;">About</h4>
           <p id="modal-game-desc" style="color: var(--text-secondary); line-height: 1.55; font-size: 0.88rem;"></p>
         </div>
 
-        <!-- System Specifications -->
         <div>
           <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">System Specifications</h4>
           <div id="modal-specs-container" class="detail-progress-grid" style="grid-template-columns: repeat(2, 1fr);"></div>
         </div>
 
-        <!-- Media Gallery -->
         <div>
           <h4 style="font-weight: 600; color: var(--text-white); margin-bottom: 8px;">Screenshots</h4>
           <div id="modal-screenshots-gallery" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;"></div>
@@ -949,9 +944,6 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 2: "WHAT SHOULD I PLAY?" (FEATURE 14 & 30)
-       ========================================== -->
   <div id="recommendation-modal" class="modal-backdrop">
     <div class="game-modal-dialog recommend-dialog">
       <button class="modal-close-btn" title="Close" aria-label="Close">
@@ -971,7 +963,6 @@
           Select your current mood and available time window. ApexPlay analyzes your library and backlog to recommend your next title.
         </p>
 
-        <!-- Question 1: Mood -->
         <div class="recommend-step-title">What are you in the mood for?</div>
         <div class="choice-pills-group" id="rec-mood-group">
           <button class="choice-pill-btn selected" data-mood="short">Something short</button>
@@ -982,7 +973,6 @@
           <button class="choice-pill-btn" data-mood="unplayed">Haven't played recently</button>
         </div>
 
-        <!-- Question 2: Time Available -->
         <div class="recommend-step-title">Available time:</div>
         <div class="choice-pills-group" id="rec-time-group">
           <button class="choice-pill-btn selected" data-time="1">Under 1 hour</button>
@@ -995,15 +985,11 @@
           Pick a Game
         </button>
 
-        <!-- Result Box -->
         <div id="recommendation-result-container" style="display: none;"></div>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 3: CREATE SHELF (FEATURE 4 & 26)
-       ========================================== -->
   <div id="create-shelf-modal" class="modal-backdrop">
     <div class="game-modal-dialog" style="max-width: 500px;">
       <button class="modal-close-btn" title="Close" aria-label="Close">
@@ -1035,9 +1021,6 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 4: CREATE LIST (FEATURE 9 & 25)
-       ========================================== -->
   <div id="create-list-modal" class="modal-backdrop">
     <div class="game-modal-dialog" style="max-width: 500px;">
       <button class="modal-close-btn" title="Close" aria-label="Close">
@@ -1076,9 +1059,6 @@
     </div>
   </div>
 
-  <!-- ==========================================
-       MODAL 5: EDIT PROFILE
-       ========================================== -->
   <div id="edit-profile-modal" class="modal-backdrop">
     <div class="game-modal-dialog" style="max-width: 480px;">
       <button class="modal-close-btn" title="Close" aria-label="Close">
@@ -1117,10 +1097,8 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- JavaScript Modules -->
   <script src="js/icons.js"></script>
   <script src="js/state.js"></script>
   <script src="js/api.js"></script>

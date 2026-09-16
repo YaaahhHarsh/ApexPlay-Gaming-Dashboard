@@ -1,9 +1,5 @@
-/**
- * APEXPLAY GAMING PLATFORM - MICRO-ANIMATIONS
- * Standardized, subtle transitions. No neon glows or distracting pulse loops.
- */
 
-/* Subtle Card Entrance */
+
 .stagger-in {
   animation: cardEntrance 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -19,7 +15,6 @@
   }
 }
 
-/* Level Up Modal Dialog */
 .level-up-overlay {
   position: fixed;
   inset: 0;
@@ -90,7 +85,6 @@
   }
 }
 
-/* In-Game Active Session Status Indicator */
 .in-game-pulse {
   display: inline-block;
   width: 8px;

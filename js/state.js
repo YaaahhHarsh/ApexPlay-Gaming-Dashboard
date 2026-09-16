@@ -1,11 +1,12 @@
-/**
- * APEXPLAY STATE MANAGEMENT
- * Handles reactive profile, library, shelves, lists, journal, achievements, wishlist, and statistics with localStorage persistence.
- */
+
 
 const STORAGE_KEY = 'apexplay_gaming_state_v1';
 
 const DEFAULT_STATE = {
+  auth: {
+    isAuthenticated: false,
+    user: null
+  },
   profile: {
     gamertag: 'V0RT3X_KNIGHT',
     title: 'Cyber Vanguard',
@@ -15,7 +16,7 @@ const DEFAULT_STATE = {
     xp: 6850,
     nextLevelXp: 8500,
     rank: 'Grandmaster Tier II',
-    status: 'online', // 'online' | 'in-game' | 'away' | 'offline'
+    status: 'online', 
     currentPlaying: 'Cyberpunk 2077',
     bio: 'Competitive FPS & immersive RPG enthusiast. Building the ultimate sci-fi backcatalog. Always down for co-op raids!',
     badges: [
@@ -26,14 +27,14 @@ const DEFAULT_STATE = {
     ]
   },
   settings: {
-    theme: 'dark', // 'dark' | 'light'
+    theme: 'dark', 
     accentColor: '#4F8CFF',
     reduceMotion: false,
     soundFx: true,
     notifications: true,
     defaultLibraryView: 'grid'
   },
-  activeSession: null, // { gameId, gameTitle, startTime }
+  activeSession: null, 
   playHistory: [
     {
       id: 'sess-1',
@@ -134,7 +135,7 @@ const DEFAULT_STATE = {
       rating: 9.4,
       userRating: 4.5,
       userReview: 'Phantom Liberty fixes everything that was missing at launch. Dogtown is dense, gritty, and the espionage narrative keeps you hooked from start to finish.',
-      status: 'Playing', // 'Playing' | 'Completed' | 'Backlog' | 'Wishlist' | 'Dropped'
+      status: 'Playing', 
       favorite: true,
       developer: 'CD PROJEKT RED',
       releaseDate: '2023-09-26',
@@ -665,13 +666,13 @@ class GameState {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Seamless backward-compatible migration
+        
         if (!parsed.shelves) parsed.shelves = JSON.parse(JSON.stringify(DEFAULT_STATE.shelves));
         if (!parsed.lists) parsed.lists = JSON.parse(JSON.stringify(DEFAULT_STATE.lists));
         if (!parsed.playHistory) parsed.playHistory = JSON.parse(JSON.stringify(DEFAULT_STATE.playHistory));
         if (!parsed.settings) parsed.settings = JSON.parse(JSON.stringify(DEFAULT_STATE.settings));
-        
-        // Migrate legacy emoji icons in badges and achievements to Lucide icon keys
+        if (!parsed.auth) parsed.auth = JSON.parse(JSON.stringify(DEFAULT_STATE.auth));
+
         const EMOJI_TO_ICON_MAP = {
           '\u{1F3AF}': 'target',
           '\u{1F3C6}': 'trophy',
@@ -701,7 +702,6 @@ class GameState {
           });
         }
 
-        // Migrate library game statuses and attributes if missing
         if (Array.isArray(parsed.library)) {
           parsed.library.forEach(g => {
             if (g.status === 'Installed') g.status = 'Playing';
@@ -748,6 +748,36 @@ class GameState {
     this.save();
   }
 
+  loginWithGoogle(email, displayName, photoURL) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const name = displayName || cleanEmail.split('@')[0] || 'Gamer';
+    const avatar = photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`;
+    
+    this.state.auth = {
+      isAuthenticated: true,
+      user: {
+        email: cleanEmail,
+        displayName: name,
+        photoURL: avatar,
+        loginAt: new Date().toISOString()
+      }
+    };
+    
+    this.state.profile.gamertag = name;
+    this.state.profile.email = cleanEmail;
+    this.state.profile.avatar = avatar;
+    this.save();
+    return this.state.auth.user;
+  }
+
+  logout() {
+    this.state.auth = {
+      isAuthenticated: false,
+      user: null
+    };
+    this.save();
+  }
+
   subscribe(listener) {
     this.listeners.push(listener);
     return () => {
@@ -761,7 +791,6 @@ class GameState {
     });
   }
 
-  // Profile actions
   updateProfile(updates) {
     this.state.profile = { ...this.state.profile, ...updates };
     this.save();
@@ -781,7 +810,6 @@ class GameState {
     return { leveledUp, newLevel: p.level, currentXp: p.xp, nextLevelXp: p.nextLevelXp };
   }
 
-  // Library actions
   addToLibrary(game, initialStatus = 'Backlog') {
     const existing = this.state.library.find(g => g.id === game.id || (game.apiId && g.apiId === game.apiId));
     if (existing) {
@@ -807,7 +835,7 @@ class GameState {
       rating: game.rating || (Math.random() * 2 + 7.5).toFixed(1),
       userRating: 0,
       userReview: '',
-      status: initialStatus, // 'Playing' | 'Completed' | 'Backlog' | 'Wishlist' | 'Dropped'
+      status: initialStatus, 
       favorite: false,
       developer: game.developer || 'Unknown Studio',
       releaseDate: game.releaseDate || game.release_date || '2024',
@@ -831,7 +859,7 @@ class GameState {
 
   removeFromLibrary(gameId) {
     this.state.library = this.state.library.filter(g => g.id !== gameId);
-    // Also remove from shelves and lists
+    
     if (this.state.shelves) {
       this.state.shelves.forEach(s => {
         s.gameIds = s.gameIds.filter(id => id !== gameId);
@@ -849,7 +877,7 @@ class GameState {
     const game = this.state.library.find(g => g.id === gameId);
     if (game) {
       game.favorite = !game.favorite;
-      // Sync with 'Favorites' shelf if exists
+      
       const favShelf = this.state.shelves ? this.state.shelves.find(s => s.id === 'shelf-favs') : null;
       if (favShelf) {
         if (game.favorite && !favShelf.gameIds.includes(gameId)) {
@@ -866,7 +894,7 @@ class GameState {
     const game = this.state.library.find(g => g.id === gameId);
     if (game) {
       game.status = status;
-      // If status is 'Completed' and has 100% achievements, sync with 100% shelf
+      
       const compShelf = this.state.shelves ? this.state.shelves.find(s => s.id === 'shelf-100') : null;
       if (compShelf) {
         if (status === 'Completed' && game.achievementsUnlocked >= game.achievementsTotal && !compShelf.gameIds.includes(gameId)) {
@@ -907,7 +935,6 @@ class GameState {
         lastDay.hours = parseFloat((lastDay.hours + additionalHours).toFixed(1));
       }
 
-      // Add to gaming journal playHistory
       if (!this.state.playHistory) this.state.playHistory = [];
       this.state.playHistory.unshift({
         id: `sess-${Date.now()}`,
@@ -924,7 +951,6 @@ class GameState {
     }
   }
 
-  // Journal note action
   updateJournalNote(entryId, note) {
     if (!this.state.playHistory) return;
     const entry = this.state.playHistory.find(e => e.id === entryId);
@@ -940,7 +966,6 @@ class GameState {
     this.save();
   }
 
-  // Custom Shelves actions
   createShelf(name, description = '', gameIds = []) {
     if (!this.state.shelves) this.state.shelves = [];
     const newShelf = {
@@ -974,7 +999,6 @@ class GameState {
     }
   }
 
-  // Custom Lists actions
   createList(title, description = '', ranked = false, gameIds = []) {
     if (!this.state.lists) this.state.lists = [];
     const newList = {
@@ -1009,7 +1033,6 @@ class GameState {
     }
   }
 
-  // Settings actions
   updateSettings(updates) {
     if (!this.state.settings) this.state.settings = { ...DEFAULT_STATE.settings };
     this.state.settings = { ...this.state.settings, ...updates };
@@ -1034,7 +1057,6 @@ class GameState {
     return false;
   }
 
-  // Wishlist actions
   addToWishlist(item) {
     const exists = this.state.wishlist.some(w => w.title.toLowerCase() === item.title.toLowerCase());
     if (exists) return false;
@@ -1062,7 +1084,6 @@ class GameState {
     this.save();
   }
 
-  // Achievements
   toggleAchievement(achId) {
     const ach = this.state.achievements.find(a => a.id === achId);
     if (!ach) return null;
@@ -1072,7 +1093,6 @@ class GameState {
       ach.unlockedDate = new Date().toISOString().split('T')[0];
       const xpRes = this.addXP(ach.xp);
 
-      // Add achievement unlock entry to gaming journal
       if (!this.state.playHistory) this.state.playHistory = [];
       this.state.playHistory.unshift({
         id: `ach-sess-${Date.now()}`,
@@ -1094,7 +1114,6 @@ class GameState {
     }
   }
 
-  // Active playing simulation session
   startSession(gameId) {
     const game = this.state.library.find(g => g.id === gameId);
     if (!game) return null;

@@ -1,17 +1,8 @@
-/**
- * APEXPLAY CENTRAL ICON SYSTEM
- * Provides consistent, standardized Lucide-style vector SVG icons.
- * Features:
- * - Offline-first native SVG definitions
- * - Standardized sizes: 12px, 14px, 16px, 18px, 20px, 24px, 32px
- * - Consistent stroke-width (2px), round join/cap, no neon glows
- * - Semantic color tokens: primary, secondary, muted, success, warning, danger
- */
+
 
 (function () {
   'use strict';
 
-  // Semantic color mappings
   const COLOR_MAP = {
     normal: '#F5F7FA',
     default: 'currentColor',
@@ -24,7 +15,6 @@
     white: '#FFFFFF'
   };
 
-  // Standard size presets
   const SIZE_MAP = {
     tiny: 12,
     compact: 14,
@@ -36,9 +26,8 @@
     hero: 40
   };
 
-  // Lucide Icon SVG Path Definitions
   const ICONS = {
-    // Navigation & Primary
+    
     house: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
     library: '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
     compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
@@ -52,7 +41,6 @@
     settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
     user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 
-    // Controls & Actions
     search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     play: '<polygon points="6 3 20 12 6 21 6 3"/>',
     'play-circle': '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
@@ -73,7 +61,6 @@
     dices: '<rect width="12" height="12" x="2" y="10" rx="2"/><path d="m17.92 14 3.5-3.5a2.41 2.41 0 0 0 0-3.41l-4.5-4.5a2.41 2.41 0 0 0-3.41 0L10 6.08"/><path d="M6 14h.01"/><path d="M10 18h.01"/><path d="M14 10.08h.01"/><path d="M18 6.08h.01"/>',
     'bookmark': '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
 
-    // Metadata & Stats
     clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
     'gamepad-2': '<line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/>',
@@ -86,7 +73,6 @@
     info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
     'alert-circle': '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
 
-    // Achievements & Gamer Badges (Replacing All Legacy Emojis)
     target: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
     zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
@@ -101,25 +87,17 @@
     gem: '<path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>'
   };
 
-  /**
-   * Generates standardized Lucide SVG markup.
-   * @param {string} name - Icon name
-   * @param {object} [options] - Options: size, color, strokeWidth, className, ariaLabel, style, fill
-   * @returns {string} Clean SVG markup
-   */
   function getIcon(name, options = {}) {
     const iconName = (name || '').toLowerCase().trim();
     const paths = ICONS[iconName] || ICONS['sparkles'];
 
-    // Resolve size
     let size = options.size;
     if (typeof size === 'string' && SIZE_MAP[size]) {
       size = SIZE_MAP[size];
     } else if (typeof size !== 'number') {
-      size = 18; // Default navigation/standard size
+      size = 18; 
     }
 
-    // Resolve color
     const colorKey = options.color || 'default';
     const color = COLOR_MAP[colorKey] || colorKey;
 
@@ -132,10 +110,6 @@
     return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="${className}"${ariaLabel}${extraStyle}>${paths}</svg>`;
   }
 
-  /**
-   * Helper to scan DOM for [data-lucide] placeholders and replace with SVG.
-   * @param {HTMLElement|Document} [root=document]
-   */
   function renderAll(root = document) {
     const elements = root.querySelectorAll('[data-lucide]');
     elements.forEach(el => {
@@ -162,7 +136,6 @@
     });
   }
 
-  // Expose globally
   const ApexIcons = {
     get: getIcon,
     renderAll: renderAll,
@@ -173,6 +146,6 @@
   };
 
   window.ApexIcons = ApexIcons;
-  window.icon = getIcon; // convenient shorthand
+  window.icon = getIcon; 
 
 })();

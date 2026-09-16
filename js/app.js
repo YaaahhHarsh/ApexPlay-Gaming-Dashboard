@@ -1,7 +1,4 @@
-/**
- * APEXPLAY GAMING PLATFORM - MAIN CONTROLLER
- * Personal Gaming Library + Gaming Journal + Analytics + Discovery
- */
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const state = window.gameState;
@@ -9,9 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const sound = window.soundFx;
   const charts = window.DashboardCharts;
 
-  // View state
   let currentTab = 'dashboard';
-  let libraryViewMode = state.state.settings?.defaultLibraryView || 'grid'; // 'grid' | 'list'
+  let libraryViewMode = state.state.settings?.defaultLibraryView || 'grid'; 
   let libraryStatusFilter = 'all';
   let libraryGenreFilter = 'all';
   let libraryPlatformFilter = 'all';
@@ -24,38 +20,30 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentModalGame = null;
   let activeSessionInterval = null;
 
-  /* ==========================================================================
-     1. INITIALIZATION & THEME SETTINGS
-     ========================================================================== */
   function applyInitialSettings() {
     const s = state.state.settings || {};
-    
-    // Theme Mode
+
     if (s.theme === 'light') {
       document.body.classList.add('light-theme');
     } else {
       document.body.classList.remove('light-theme');
     }
 
-    // Accent Color
     if (s.accentColor && s.accentColor !== '#4F8CFF') {
       document.documentElement.style.setProperty('--color-primary', s.accentColor);
       document.documentElement.style.setProperty('--color-primary-hover', s.accentColor);
     }
 
-    // Reduce Motion
     if (s.reduceMotion) {
       document.body.classList.add('reduce-motion');
       const toggle = document.getElementById('toggle-reduce-motion');
       if (toggle) toggle.checked = true;
     }
 
-    // Sound toggle state
     updateSoundButtonIcon(sound.muted);
     const toggle = document.getElementById('toggle-sound-effects');
     if (toggle) toggle.checked = !sound.muted;
 
-    // Default library view
     if (s.defaultLibraryView) {
       libraryViewMode = s.defaultLibraryView;
       const select = document.getElementById('settings-default-view');
@@ -73,25 +61,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     2. PROFILE & DASHBOARD GREETING
-     ========================================================================== */
   function renderProfile() {
     const p = state.state.profile;
+    const auth = state.state.auth;
     const library = state.state.library;
 
     document.querySelectorAll('.profile-gamertag').forEach(el => el.textContent = p.gamertag);
     document.querySelectorAll('.profile-avatar-img, .mini-avatar').forEach(el => el.src = p.avatar);
     
+    const emailEl = document.getElementById('profile-email-text');
+    if (emailEl) {
+      emailEl.textContent = auth?.user?.email || p.email || 'Sign in with Gmail';
+    }
+
     const rankEl = document.getElementById('profile-rank-text');
     if (rankEl) rankEl.textContent = p.rank;
 
-    // Mini profile XP
     const pct = Math.min(100, Math.round((p.xp / p.nextLevelXp) * 100));
     const sidebarXp = document.getElementById('sidebar-xp-bar');
     if (sidebarXp) sidebarXp.style.width = `${pct}%`;
 
-    // Overview Stats
     const totalPlaytime = library.reduce((acc, g) => acc + g.playtimeHours, 0);
     const completedGames = library.filter(g => g.status === 'Completed').length;
     const playingCount = library.filter(g => g.status === 'Playing').length;
@@ -113,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
       statusText.textContent = `Ready for your next session • ${playingCount} active title${playingCount === 1 ? '' : 's'} in progress`;
     }
 
-    // Sidebar Tab Badges
     const totalAchUnlocked = state.state.achievements.filter(a => a.unlocked).length;
     const badgeAch = document.getElementById('badge-ach-count');
     if (badgeAch) badgeAch.textContent = totalAchUnlocked;
@@ -131,9 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgeLists) badgeLists.textContent = state.state.lists?.length || 0;
   }
 
-  /* ==========================================================================
-     3. CONTINUE PLAYING (FEATURE 5)
-     ========================================================================== */
   function renderContinuePlaying() {
     const container = document.getElementById('continue-playing-widget');
     if (!container) return;
@@ -151,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Find the most recently active game: either currentPlaying or first Playing game or top recently played
     let game = library.find(g => g.title === state.state.profile.currentPlaying) ||
                library.find(g => g.status === 'Playing') ||
                library[0];
@@ -204,9 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
-  /* ==========================================================================
-     4. RECENTLY PLAYED & DASHBOARD SNAPSHOTS
-     ========================================================================== */
   function renderRecentlyPlayed() {
     const container = document.getElementById('recently-played-container');
     if (!container) return;
@@ -245,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderDashboardSnapshots() {
-    // Recent Achievements Snapshot
+    
     const achContainer = document.getElementById('dashboard-recent-achievements');
     if (achContainer) {
       const unlockedAch = state.state.achievements.filter(a => a.unlocked).slice(0, 3);
@@ -270,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Priority Backlog Snapshot
     const backlogContainer = document.getElementById('dashboard-backlog-preview');
     if (backlogContainer) {
       const backlogGames = state.state.library.filter(g => g.status === 'Backlog').slice(0, 3);
@@ -291,9 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     5. LIBRARY SYSTEM (FEATURES 2 & 3)
-     ========================================================================== */
   function populateLibraryDropdowns() {
     const library = state.state.library;
     const genreSelect = document.getElementById('library-genre-select');
@@ -348,16 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLibraryStatusCounts();
     let list = [...state.state.library];
 
-    // Status filter
     if (libraryStatusFilter === 'Wishlist') {
-      // Show wishlist items formatted as library cards
+      
       renderLibraryWishlistProxy(container);
       return;
     } else if (libraryStatusFilter !== 'all') {
       list = list.filter(g => g.status.toLowerCase() === libraryStatusFilter.toLowerCase());
     }
 
-    // Search query filter
     if (librarySearchQuery) {
       const q = librarySearchQuery.toLowerCase();
       list = list.filter(g => 
@@ -367,17 +342,14 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     }
 
-    // Genre filter
     if (libraryGenreFilter !== 'all') {
       list = list.filter(g => g.genre.toLowerCase().includes(libraryGenreFilter.toLowerCase()));
     }
 
-    // Platform filter
     if (libraryPlatformFilter !== 'all') {
       list = list.filter(g => g.platform.toLowerCase().includes(libraryPlatformFilter.toLowerCase()));
     }
 
-    // Sort
     if (librarySortFilter === 'playtime') {
       list.sort((a, b) => b.playtimeHours - a.playtimeHours);
     } else if (librarySortFilter === 'name') {
@@ -392,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } else if (librarySortFilter === 'added') {
       list.reverse();
-    } // 'recent' keeps current order
+    } 
 
     if (list.length === 0) {
       container.innerHTML = `
@@ -450,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }).join('');
     } else {
-      // List View (Information Prioritized)
+      
       container.className = 'games-catalog-list';
       container.innerHTML = `
         <div class="game-row-header">
@@ -540,9 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  /* ==========================================================================
-     6. GAME DETAILS MODAL (FEATURES 6, 8, 12)
-     ========================================================================== */
   async function openGameDetails(gameOrId, isPublicApi = false) {
     sound.click();
     const modal = document.getElementById('game-details-modal');
@@ -562,7 +531,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!game) return;
 
-    // Ensure game has game_url if obtainable
     if (!game.game_url) {
       if (game.gameUrl) game.game_url = game.gameUrl;
       else if (game.apiId) game.game_url = `https://www.freetogame.com/open/${game.apiId}`;
@@ -570,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     currentModalGame = game;
 
-    // Header & Meta
     const heroImg = document.getElementById('modal-game-hero');
     if (heroImg) heroImg.src = game.banner || game.thumbnail;
 
@@ -586,7 +553,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const descEl = document.getElementById('modal-game-desc');
     if (descEl) descEl.textContent = game.description || game.short_description || 'No description available.';
 
-    // Progress Section
     const hoursEl = document.getElementById('modal-progress-hours');
     if (hoursEl) hoursEl.textContent = `${game.playtimeHours || 0}h`;
 
@@ -603,7 +569,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const lastEl = document.getElementById('modal-progress-last');
     if (lastEl) lastEl.textContent = game.lastPlayed || 'Never played';
 
-    // Status Select
     const statusSelect = document.getElementById('modal-status-select');
     if (statusSelect) {
       statusSelect.value = game.status || 'Backlog';
@@ -617,7 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    // Action buttons
     const inLibrary = state.state.library.some(g => g.id === game.id || (game.id && g.apiId === game.id));
     const addLibBtn = document.getElementById('modal-btn-add-library');
     const playBtn = document.getElementById('modal-btn-play');
@@ -703,7 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    // HowLongToBeat Section (Feature 12)
     const hltbContainer = document.getElementById('modal-hltb-content');
     if (hltbContainer) {
       if (game.hltb) {
@@ -738,7 +701,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Ratings & Reviews (Feature 8)
     const currentRating = game.userRating || 0;
     const ratingDisplay = document.getElementById('modal-rating-val');
     if (ratingDisplay) ratingDisplay.textContent = currentRating > 0 ? `${currentRating} / 5` : 'Not rated yet';
@@ -755,7 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.click();
         let newRating = starNum;
         if (currentRating === starNum) {
-          newRating = starNum - 0.5; // Toggle half-star
+          newRating = starNum - 0.5; 
         }
         state.setGameRating(game.id, newRating);
         game.userRating = newRating;
@@ -765,7 +727,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
 
-    // Community rating if available
     const commBox = document.getElementById('modal-community-rating-box');
     const commVal = document.getElementById('modal-community-rating-val');
     if (commBox && commVal) {
@@ -777,7 +738,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Review Box
     const reviewInput = document.getElementById('modal-review-input');
     if (reviewInput) {
       reviewInput.value = game.userReview || '';
@@ -792,7 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Play Session History
     const historyContainer = document.getElementById('modal-session-history-container');
     if (historyContainer) {
       const sessions = (state.state.playHistory || []).filter(s => s.gameId === game.id);
@@ -809,7 +768,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // System Specs
     const specsContainer = document.getElementById('modal-specs-container');
     if (specsContainer) {
       const specs = game.minSpecs || game.minimum_system_requirements || {
@@ -827,7 +785,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
 
-    // Screenshots
     const gallery = document.getElementById('modal-screenshots-gallery');
     if (gallery) {
       let shots = [];
@@ -849,9 +806,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) modal.classList.remove('open');
   }
 
-  /* ==========================================================================
-     7. GAMING JOURNAL / ACTIVITY TIMELINE (FEATURE 7)
-     ========================================================================== */
   function renderGamingJournal() {
     const container = document.getElementById('journal-timeline-container');
     if (!container) return;
@@ -871,7 +825,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Group entries by date
     const groups = {};
     history.forEach(entry => {
       const groupKey = entry.date || entry.rawDate || 'Recent';
@@ -934,9 +887,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderRecentlyPlayed();
   }
 
-  /* ==========================================================================
-     8. "WHAT SHOULD I PLAY?" SIGNATURE FEATURE (FEATURE 14)
-     ========================================================================== */
   let selectedMood = 'short';
   let selectedTime = '1';
 
@@ -952,7 +902,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
-    // Mood choice pills
     document.querySelectorAll('#rec-mood-group .choice-pill-btn').forEach(btn => {
       btn.onclick = () => {
         sound.click();
@@ -962,7 +911,6 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     });
 
-    // Time choice pills
     document.querySelectorAll('#rec-time-group .choice-pill-btn').forEach(btn => {
       btn.onclick = () => {
         sound.click();
@@ -984,12 +932,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const library = state.state.library;
     if (library.length === 0) return;
 
-    // Rule-based candidate scoring
     const candidates = library.map(game => {
       let score = 10;
       const reasons = [];
 
-      // Mood match
       if (mood === 'story') {
         if (game.genre.toLowerCase().includes('rpg') || game.genre.toLowerCase().includes('adventure')) {
           score += 25;
@@ -1022,7 +968,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Time fit
       if (maxHours <= 1) {
         if (game.genre.toLowerCase().includes('shooter') || game.genre.toLowerCase().includes('roguelike')) {
           score += 15;
@@ -1035,13 +980,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Backlog boost
       if (game.status === 'Backlog') {
         score += 10;
         reasons.push('Already in your backlog collection');
       }
 
-      // User rating boost
       if (game.userRating >= 4.5) {
         score += 8;
         reasons.push(`Highly rated by you (${game.userRating} / 5 stars)`);
@@ -1112,9 +1055,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     9. CUSTOM SHELVES (FEATURE 4)
-     ========================================================================== */
   function renderShelves() {
     const container = document.getElementById('shelves-cards-container');
     if (!container) return;
@@ -1181,9 +1121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('open');
   }
 
-  /* ==========================================================================
-     10. CUSTOM LISTS (FEATURE 9)
-     ========================================================================== */
   function renderLists() {
     const container = document.getElementById('lists-cards-container');
     if (!container) return;
@@ -1252,9 +1189,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.add('open');
   }
 
-  /* ==========================================================================
-     11. ACHIEVEMENT CENTER (FEATURE 10)
-     ========================================================================== */
   function renderAchievements(section = 'all') {
     const container = document.getElementById('achievements-list-container');
     if (!container) return;
@@ -1313,9 +1247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  /* ==========================================================================
-     12. PLAYTIME ANALYTICS (FEATURE 11)
-     ========================================================================== */
   function renderAnalytics() {
     setTimeout(() => {
       charts.renderWeeklyPlaytime('chart-weekly-canvas', state.state.stats.weeklyHours);
@@ -1336,9 +1267,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     13. DISCOVER (FEATURE 13)
-     ========================================================================== */
   async function loadDiscoverGames(genre = 'all') {
     const container = document.getElementById('discover-games-container');
     if (!container) return;
@@ -1415,9 +1343,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  /* ==========================================================================
-     14. WISHLIST & NEWS
-     ========================================================================== */
   function renderWishlist() {
     const container = document.getElementById('wishlist-container');
     if (!container) return;
@@ -1491,9 +1416,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     15. GAME PLAY & ACTIVE SESSION TRACKING
-     ========================================================================== */
   function handlePlayNow(gameOrUrl, title) {
     let url = null;
     let gameTitle = title || 'Game';
@@ -1504,7 +1426,6 @@ document.addEventListener('DOMContentLoaded', () => {
       url = gameOrUrl.game_url || gameOrUrl.gameUrl;
       gameTitle = gameOrUrl.title || title || 'Game';
 
-      // Fallback if missing game_url but has apiId or numeric id
       if (!url && gameOrUrl.apiId) {
         url = `https://www.freetogame.com/open/${gameOrUrl.apiId}`;
       } else if (!url && typeof gameOrUrl.id === 'number') {
@@ -1512,18 +1433,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Validate URL protocol and presence
     if (!url || typeof url !== 'string' || (!url.startsWith('http://') && !url.startsWith('https://'))) {
       sound.click();
       showToast(`Play link unavailable for "${gameTitle}"`, 'warning');
       return false;
     }
 
-    // Audio & User Feedback
     sound.launch();
     showToast(`Opening ${gameTitle}...`, 'info');
 
-    // Safe window.open with fallback for popup blockers
     try {
       const win = window.open(url, '_blank', 'noopener,noreferrer');
       if (!win || win.closed || typeof win.closed === 'undefined') {
@@ -1598,9 +1516,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ==========================================================================
-     16. TAB NAVIGATION
-     ========================================================================== */
   function switchTab(tabId) {
     sound.tab();
     currentTab = tabId;
@@ -1647,9 +1562,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ==========================================================================
-     17. GLOBAL SEARCH (NAVBAR)
-     ========================================================================== */
   const searchInput = document.getElementById('nav-search-input');
   const searchDropdown = document.getElementById('nav-search-dropdown');
   let searchTimeout = null;
@@ -1714,9 +1626,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ==========================================================================
-     18. TOAST NOTIFICATIONS
-     ========================================================================== */
   function showToast(msg, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
@@ -1744,11 +1653,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2800);
   }
 
-  /* ==========================================================================
-     19. GLOBAL EVENT DELEGATION
-     ========================================================================== */
   document.body.addEventListener('click', (e) => {
-    // Navigation Tabs
+    
     const tabBtn = e.target.closest('[data-tab]');
     if (tabBtn) {
       e.preventDefault();
@@ -1756,7 +1662,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Launch / Play Game
     const launchBtn = e.target.closest('[data-launch-id]');
     if (launchBtn) {
       e.preventDefault();
@@ -1769,7 +1674,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Direct Play from Discover Cards
     const discoverPlayBtn = e.target.closest('[data-discover-play-id]');
     if (discoverPlayBtn) {
       e.preventDefault();
@@ -1783,7 +1687,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Details Modal
     const detailsBtn = e.target.closest('[data-details-id]');
     if (detailsBtn) {
       e.preventDefault();
@@ -1791,7 +1694,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Public Details Modal
     const pubDetailsBtn = e.target.closest('[data-public-details-id]');
     if (pubDetailsBtn) {
       e.preventDefault();
@@ -1799,7 +1701,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Add API game to library
     const addLibBtn = e.target.closest('[data-add-library-api]');
     if (addLibBtn) {
       e.preventDefault();
@@ -1824,7 +1725,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Toggle Favorite
     const favBtn = e.target.closest('[data-fav-id]');
     if (favBtn) {
       e.preventDefault();
@@ -1835,7 +1735,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Wishlist: Move to Library
     const moveToLibBtn = e.target.closest('[data-move-to-lib]');
     if (moveToLibBtn) {
       e.preventDefault();
@@ -1856,7 +1755,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Wishlist: Remove
     const removeWishBtn = e.target.closest('[data-remove-wishlist]');
     if (removeWishBtn) {
       e.preventDefault();
@@ -1869,7 +1767,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Toggle Achievement
     const achBtn = e.target.closest('[data-toggle-ach]');
     if (achBtn) {
       e.preventDefault();
@@ -1889,7 +1786,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // View Shelf
     const viewShelfBtn = e.target.closest('[data-view-shelf]');
     if (viewShelfBtn) {
       e.preventDefault();
@@ -1902,7 +1798,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Delete Shelf
     const deleteShelfBtn = e.target.closest('[data-delete-shelf]');
     if (deleteShelfBtn) {
       e.preventDefault();
@@ -1914,7 +1809,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Delete List
     const deleteListBtn = e.target.closest('[data-delete-list]');
     if (deleteListBtn) {
       e.preventDefault();
@@ -1926,7 +1820,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Edit Journal Note
     const editJournalBtn = e.target.closest('[data-edit-journal]');
     if (editJournalBtn) {
       e.preventDefault();
@@ -1943,7 +1836,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Delete Journal Entry
     const deleteJournalBtn = e.target.closest('[data-delete-journal]');
     if (deleteJournalBtn) {
       e.preventDefault();
@@ -1954,20 +1846,17 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Close Modals
     if (e.target.closest('.modal-close-btn') || e.target.classList.contains('modal-backdrop')) {
       document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open'));
       return;
     }
   });
 
-  // End Session Button
   const btnEndSession = document.getElementById('btn-end-session');
   if (btnEndSession) {
     btnEndSession.onclick = handleEndSession;
   }
 
-  // View Mode Toggles (Grid vs List)
   const btnViewGrid = document.getElementById('btn-view-grid');
   const btnViewList = document.getElementById('btn-view-list');
   if (btnViewGrid && btnViewList) {
@@ -1987,7 +1876,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Library Status Navigation Pills
   document.querySelectorAll('.library-status-tab-btn').forEach(btn => {
     btn.onclick = () => {
       sound.click();
@@ -1998,7 +1886,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Library Inline Search
   const libSearchInput = document.getElementById('library-search-input');
   if (libSearchInput) {
     libSearchInput.addEventListener('input', (e) => {
@@ -2007,7 +1894,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Library Genre & Platform Dropdowns
   const libGenreSelect = document.getElementById('library-genre-select');
   if (libGenreSelect) {
     libGenreSelect.onchange = (e) => {
@@ -2032,7 +1918,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Discover Curated Filter Pills
   document.querySelectorAll('.filter-tag-chip[data-discover-curation]').forEach(btn => {
     btn.onclick = () => {
       sound.click();
@@ -2043,7 +1928,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Discover Genre Filter
   const discoverGenreSelect = document.getElementById('discover-genre-filter');
   if (discoverGenreSelect) {
     discoverGenreSelect.onchange = (e) => {
@@ -2052,7 +1936,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Discover Random Pick Button
   const btnDiscoverRandom = document.getElementById('btn-discover-random');
   if (btnDiscoverRandom) {
     btnDiscoverRandom.onclick = () => {
@@ -2064,7 +1947,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Achievements Section Toolbar
   document.querySelectorAll('.choice-pill-btn[data-ach-section]').forEach(btn => {
     btn.onclick = () => {
       sound.click();
@@ -2074,13 +1956,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Manual Journal Log Button
   const btnAddManualJournal = document.getElementById('btn-add-manual-journal');
   if (btnAddManualJournal) {
     btnAddManualJournal.onclick = openManualJournalPrompt;
   }
 
-  // Create Shelf Modal & Button
   const btnCreateShelf = document.getElementById('btn-create-shelf');
   if (btnCreateShelf) {
     btnCreateShelf.onclick = openCreateShelfModal;
@@ -2108,7 +1988,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Create List Modal & Button
   const btnCreateList = document.getElementById('btn-create-list');
   if (btnCreateList) {
     btnCreateList.onclick = openCreateListModal;
@@ -2137,7 +2016,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Settings Actions
   const btnThemeDark = document.getElementById('btn-theme-dark');
   const btnThemeLight = document.getElementById('btn-theme-light');
   if (btnThemeDark && btnThemeLight) {
@@ -2248,7 +2126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Edit Profile Modal
   const editProfileModal = document.getElementById('edit-profile-modal');
   const btnOpenEditProfile = document.getElementById('btn-open-edit-profile');
   const btnSaveProfile = document.getElementById('btn-save-profile');
@@ -2288,7 +2165,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Close Levelup Button
   const btnCloseLevelup = document.getElementById('btn-close-levelup');
   if (btnCloseLevelup) {
     btnCloseLevelup.onclick = () => {
@@ -2297,7 +2173,77 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Initial Run
+  function initAuthGate() {
+    const gate = document.getElementById('gmail-login-gate');
+    const btnGoogle = document.getElementById('btn-google-signin');
+    const formGmail = document.getElementById('form-gmail-login');
+    const inputEmail = document.getElementById('gmail-input-email');
+    const inputName = document.getElementById('gmail-input-name');
+    const btnSignout = document.getElementById('btn-user-signout');
+
+    function updateGateVisibility() {
+      const isAuth = Boolean(state.state.auth && state.state.auth.isAuthenticated);
+      if (gate) {
+        if (isAuth) {
+          gate.classList.add('hidden');
+        } else {
+          gate.classList.remove('hidden');
+        }
+      }
+      if (btnSignout) {
+        btnSignout.style.display = isAuth ? 'inline-flex' : 'none';
+      }
+    }
+
+    function processLogin(email, displayName) {
+      const cleanEmail = (email || '').trim().toLowerCase();
+      if (!cleanEmail || !cleanEmail.includes('@') || (!cleanEmail.endsWith('@gmail.com') && !cleanEmail.endsWith('.com'))) {
+        showToast('Please enter a valid Gmail address (@gmail.com)', 'warn');
+        sound.click();
+        return false;
+      }
+      const user = state.loginWithGoogle(cleanEmail, displayName);
+      sound.achievement();
+      showToast(`Welcome to ApexPlay, ${user.displayName}!`, 'success');
+      updateGateVisibility();
+      renderProfile();
+      return true;
+    }
+
+    if (btnGoogle) {
+      btnGoogle.onclick = () => {
+        sound.click();
+        const demoGmail = inputEmail && inputEmail.value ? inputEmail.value.trim() : 'gamer@gmail.com';
+        const entered = prompt('Sign in with your Google account (Gmail):', demoGmail);
+        if (entered) {
+          processLogin(entered, entered.split('@')[0]);
+        }
+      };
+    }
+
+    if (formGmail) {
+      formGmail.onsubmit = (e) => {
+        e.preventDefault();
+        const email = inputEmail ? inputEmail.value : '';
+        const name = inputName ? inputName.value : '';
+        processLogin(email, name);
+      };
+    }
+
+    if (btnSignout) {
+      btnSignout.onclick = () => {
+        sound.click();
+        state.logout();
+        showToast('Signed out of Gmail session', 'info');
+        updateGateVisibility();
+        renderProfile();
+      };
+    }
+
+    updateGateVisibility();
+  }
+
+  initAuthGate();
   applyInitialSettings();
   initRecommendationEngine();
 
@@ -2315,6 +2261,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderWishlist();
   renderNews();
 
-  // Background preload for Discover catalog
   loadDiscoverGames('all');
 });

@@ -1,7 +1,4 @@
-/**
- * APEXPLAY PUBLIC GAMES API CLIENT
- * Integrates FreeToGame Public Games API with fallback offline catalog and search.
- */
+
 
 const FREE_TO_GAME_BASE = 'https://www.freetogame.com/api';
 
@@ -213,7 +210,7 @@ class GamesApiClient {
       return data;
     } catch (err) {
       console.warn(`Game details API error for id ${apiId}:`, err.message);
-      // Construct fallback from fallback list
+      
       const fallback = FALLBACK_PUBLIC_GAMES.find(g => g.id === Number(apiId));
       if (fallback) {
         return {

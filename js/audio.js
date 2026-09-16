@@ -1,7 +1,4 @@
-/**
- * APEXPLAY AUDIO SYNTHESIZER
- * Synthesizes gaming interface sounds with Web Audio API. Zero external audio file dependencies.
- */
+
 
 class SoundFx {
   constructor() {
@@ -45,20 +42,20 @@ class SoundFx {
       osc.start();
       osc.stop(this.ctx.currentTime + duration);
     } catch (e) {
-      // Ignore audio autoplay policy errors
+      
     }
   }
 
   hover() {
-    this.playBlip(587.33, 'sine', 0.04, 0.02); // D5
+    this.playBlip(587.33, 'sine', 0.04, 0.02); 
   }
 
   click() {
-    this.playBlip(880, 'triangle', 0.06, 0.04); // A5
+    this.playBlip(880, 'triangle', 0.06, 0.04); 
   }
 
   tab() {
-    this.playBlip(659.25, 'sine', 0.08, 0.03); // E5
+    this.playBlip(659.25, 'sine', 0.08, 0.03); 
   }
 
   launch() {
@@ -89,7 +86,7 @@ class SoundFx {
     try {
       this.init();
       if (!this.ctx) return;
-      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+      const notes = [523.25, 659.25, 783.99, 1046.5]; 
       notes.forEach((freq, idx) => {
         setTimeout(() => {
           this.playBlip(freq, 'sine', 0.18, 0.05);
