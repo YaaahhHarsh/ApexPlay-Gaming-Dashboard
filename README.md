@@ -124,3 +124,8 @@ npx serve .
 # Or using Python
 python -m http.server 8080
 ```
+
+## 🌐 Live Production Deployment
+- **Live URL**: [https://yaaahhharsh.github.io/ApexPlay-Gaming-Dashboard/](https://yaaahhharsh.github.io/ApexPlay-Gaming-Dashboard/)
+- **Repository**: [https://github.com/YaaahhHarsh/ApexPlay-Gaming-Dashboard](https://github.com/YaaahhHarsh/ApexPlay-Gaming-Dashboard)
+- **Automated CI/CD**: Powered by GitHub Actions & GitHub Pages
