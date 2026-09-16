@@ -1,7 +1,5 @@
 # ⚡ ApexPlay | Personal Gaming Platform
 
-👉 **[Open ApexPlay](👉 **[Open ApexPlay](https://yaaahharsh.github.io/ApexPlay-Gaming-Dashboard/)**)
-
 A complete personal gaming platform inspired by the information architecture of **Steam**, **Backloggd**, **Grouvee**, **Xbox**, and **HowLongToBeat**—crafted with ApexPlay's own calm, modern, gaming-focused visual identity.
 
 ApexPlay is designed around the core vision:
